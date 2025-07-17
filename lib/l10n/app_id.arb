@@ -1,0 +1,21 @@
+{
+  "appTitle": "Aplikasi Todo",
+  "todoList": "Daftar Todo",
+  "addTodo": "Tambah Todo",
+  "editTodo": "Edit Todo",
+  "deleteTodo": "Hapus Todo",
+  "todoTitle": "Judul Todo",
+  "todoDescription": "Deskripsi Todo",
+  "save": "Simpan",
+  "cancel": "Batal",
+  "markAsCompleted": "Tandai Selesai",
+  "markAsIncomplete": "Tandai Belum Selesai",
+  "noTodos": "Belum ada todo. Tambah satu!",
+  "darkMode": "Mode Gelap",
+  "lightMode": "Mode Terang",
+  "settings": "Pengaturan",
+  "debugScreen": "Layar Debug",
+  "language": "Bahasa",
+  "english": "Bahasa Inggris",
+  "indonesian": "Bahasa Indonesia"
+}

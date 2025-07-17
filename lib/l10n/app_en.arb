@@ -1,0 +1,78 @@
+{
+  "appTitle": "Todo App",
+  "@appTitle": {
+    "description": "Title of the application"
+  },
+  "todoList": "Todo List",
+  "@todoList": {
+    "description": "Title for todo list"
+  },
+  "addTodo": "Add Todo",
+  "@addTodo": {
+    "description": "Button text to add todo"
+  },
+  "editTodo": "Edit Todo",
+  "@editTodo": {
+    "description": "Button text to edit todo"
+  },
+  "deleteTodo": "Delete Todo",
+  "@deleteTodo": {
+    "description": "Button text to delete todo"
+  },
+  "todoTitle": "Todo Title",
+  "@todoTitle": {
+    "description": "Label for todo title input"
+  },
+  "todoDescription": "Todo Description",
+  "@todoDescription": {
+    "description": "Label for todo description input"
+  },
+  "save": "Save",
+  "@save": {
+    "description": "Save button text"
+  },
+  "cancel": "Cancel",
+  "@cancel": {
+    "description": "Cancel button text"
+  },
+  "markAsCompleted": "Mark as Completed",
+  "@markAsCompleted": {
+    "description": "Action to mark todo as completed"
+  },
+  "markAsIncomplete": "Mark as Incomplete",
+  "@markAsIncomplete": {
+    "description": "Action to mark todo as incomplete"
+  },
+  "noTodos": "No todos yet. Add one!",
+  "@noTodos": {
+    "description": "Message when no todos exist"
+  },
+  "darkMode": "Dark Mode",
+  "@darkMode": {
+    "description": "Dark mode setting"
+  },
+  "lightMode": "Light Mode",
+  "@lightMode": {
+    "description": "Light mode setting"
+  },
+  "settings": "Settings",
+  "@settings": {
+    "description": "Settings page title"
+  },
+  "debugScreen": "Debug Screen",
+  "@debugScreen": {
+    "description": "Debug screen title"
+  },
+  "language": "Language",
+  "@language": {
+    "description": "Language setting"
+  },
+  "english": "English",
+  "@english": {
+    "description": "English language option"
+  },
+  "indonesian": "Indonesian",
+  "@indonesian": {
+    "description": "Indonesian language option"
+  }
+}
