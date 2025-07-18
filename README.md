@@ -93,10 +93,10 @@ lib/
    ```bash
    # Web
    flutter run -d chrome
-   
+
    # Android
    flutter run -d android
-   
+
    # iOS
    flutter run -d ios
    ```
