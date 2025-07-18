@@ -14,7 +14,7 @@ class LoadLocaleEvent extends LocaleEvent {
 
 class ChangeLocaleEvent extends LocaleEvent {
   final Locale locale;
-  
+
   const ChangeLocaleEvent(this.locale);
 
   @override

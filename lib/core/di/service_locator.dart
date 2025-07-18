@@ -9,7 +9,7 @@ final getIt = GetIt.instance;
 @InjectableInit()
 Future<void> configureDependencies() async {
   getIt.init();
-  
+
   // Manually register LocaleBloc since build runner is having issues
   getIt.registerFactory<LocaleBloc>(
     () => LocaleBloc(getIt<SharedPreferencesHelper>()),
