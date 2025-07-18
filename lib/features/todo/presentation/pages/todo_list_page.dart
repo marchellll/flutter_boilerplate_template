@@ -32,7 +32,7 @@ class _TodoListPageState extends State<TodoListPage> {
           IconButton(
             icon: const Icon(Icons.settings),
             onPressed: () {
-              context.go('/settings');
+              context.push('/settings');
             },
           ),
         ],

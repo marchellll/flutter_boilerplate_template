@@ -3,6 +3,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../../l10n/app_localizations.dart';
 import 'package:go_router/go_router.dart';
 import '../../../../core/theme/bloc/theme_bloc.dart';
+import '../../../../core/locale/bloc/locale_bloc.dart';
+import '../../../../core/locale/bloc/locale_event.dart';
+import '../../../../core/locale/bloc/locale_state.dart';
 
 class SettingsPage extends StatelessWidget {
   const SettingsPage({super.key});
@@ -14,6 +17,10 @@ class SettingsPage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text(l10n.settings),
+        leading: IconButton(
+          icon: const Icon(Icons.close),
+          onPressed: () => context.pop(),
+        ),
       ),
       body: ListView(
         padding: const EdgeInsets.all(16),
@@ -69,13 +76,46 @@ class SettingsPage extends StatelessWidget {
           ),
           const SizedBox(height: 16),
           Card(
-            child: ListTile(
-              leading: const Icon(Icons.language),
-              title: Text(l10n.language),
-              subtitle: const Text('English'),
-              onTap: () {
-                // TODO: Implement language selection
-              },
+            child: Column(
+              children: [
+                ListTile(
+                  leading: const Icon(Icons.language),
+                  title: Text(l10n.language),
+                  subtitle: const Text('Choose your preferred language'),
+                ),
+                BlocBuilder<LocaleBloc, LocaleState>(
+                  builder: (context, localeState) {
+                    return Column(
+                      children: [
+                        RadioListTile<String>(
+                          title: const Text('English'),
+                          value: 'en',
+                          groupValue: localeState.locale.languageCode,
+                          onChanged: (value) {
+                            if (value != null) {
+                              context.read<LocaleBloc>().add(
+                                ChangeLocaleEvent(Locale(value)),
+                              );
+                            }
+                          },
+                        ),
+                        RadioListTile<String>(
+                          title: const Text('Bahasa Indonesia'),
+                          value: 'id',
+                          groupValue: localeState.locale.languageCode,
+                          onChanged: (value) {
+                            if (value != null) {
+                              context.read<LocaleBloc>().add(
+                                ChangeLocaleEvent(Locale(value)),
+                              );
+                            }
+                          },
+                        ),
+                      ],
+                    );
+                  },
+                ),
+              ],
             ),
           ),
           const SizedBox(height: 16),
@@ -85,7 +125,7 @@ class SettingsPage extends StatelessWidget {
               title: Text(l10n.debugScreen),
               subtitle: const Text('View app debug information'),
               onTap: () {
-                context.go('/debug');
+                context.push('/debug');
               },
             ),
           ),
