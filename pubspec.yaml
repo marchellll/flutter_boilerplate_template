@@ -81,6 +81,8 @@ dev_dependencies:
   mocktail: ^1.0.4
 
   # Code Generation
+  # These packages work with 'flutter packages pub run build_runner build'
+  # to generate code for JSON serialization and dependency injection
   build_runner: ^2.5.4
   json_serializable: ^6.9.5
   injectable_generator: ^2.7.0
@@ -93,6 +95,11 @@ dev_dependencies:
 
 # The following section is specific to Flutter packages.
 flutter:
+  # Enable automatic code generation for:
+  # - Localization (l10n) - generates translation classes from ARB files
+  # - Build runner - generates JSON serialization, Injectable DI, etc.
+  # - Other Flutter generators during build/run/pub get
+  # See l10n.yaml for localization configuration
   generate: true
 
   # The following line ensures that the Material Icons font is
