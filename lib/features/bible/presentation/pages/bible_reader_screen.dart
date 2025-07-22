@@ -1,10 +1,10 @@
 import 'package:another_bible/features/bible/presentation/bloc/bible_reader_bloc.dart';
 import 'package:another_bible/features/bible/presentation/widgets/navigation_modal.dart';
 import 'package:another_bible/features/bible/presentation/widgets/version_picker_modal.dart';
-import 'package:another_bible/features/bible/presentation/widgets/more_modal.dart';
 import 'package:another_bible/features/bible/presentation/widgets/verse_list_widget.dart';
-import 'package:another_bible/features/bible/presentation/widgets/menu_bar_widget.dart';
 import 'package:another_bible/features/bible/presentation/widgets/floating_pill_widget.dart';
+import 'package:another_bible/core/widgets/app_bottom_navigation_bar.dart';
+import 'package:another_bible/core/widgets/app_more_modal.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../models/bible_reader_models.dart';
@@ -75,8 +75,20 @@ class _BibleReaderScreenState extends State<BibleReaderScreen> {
                     bottom: state.isMenuBarVisible ? 0 : -60,
                     left: 0,
                     right: 0,
-                    child: MenuBarWidget(
-                      onMoreTap: () => MoreModal.show(context),
+                    child: AppBottomNavigationBar(
+                      currentIndex: 1, // Bible is at index 1
+                      onTap: (index) {
+                        // Handle navigation between different sections
+                        switch (index) {
+                          case 0: // Home
+                            break;
+                          case 1: // Bible (current)
+                            break;
+                          case 2: // Plans
+                            break;
+                        }
+                      },
+                      onMoreTap: () => AppMoreModal.show(context),
                     ),
                   ),
 

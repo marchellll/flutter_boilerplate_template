@@ -12,37 +12,22 @@ class AppLocalizationsId extends AppLocalizations {
   String get appTitle => 'Aplikasi Todo';
 
   @override
-  String get todoList => 'Daftar Todo';
+  String get bible => 'Bible';
 
   @override
-  String get addTodo => 'Tambah Todo';
+  String get home => 'Home';
 
   @override
-  String get editTodo => 'Edit Todo';
+  String get plans => 'Plans';
 
   @override
-  String get deleteTodo => 'Hapus Todo';
-
-  @override
-  String get todoTitle => 'Judul Todo';
-
-  @override
-  String get todoDescription => 'Deskripsi Todo';
+  String get more => 'More';
 
   @override
   String get save => 'Simpan';
 
   @override
   String get cancel => 'Batal';
-
-  @override
-  String get markAsCompleted => 'Tandai Selesai';
-
-  @override
-  String get markAsIncomplete => 'Tandai Belum Selesai';
-
-  @override
-  String get noTodos => 'Belum ada todo. Tambah satu!';
 
   @override
   String get darkMode => 'Mode Gelap';

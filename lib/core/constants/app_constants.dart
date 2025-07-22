@@ -6,7 +6,6 @@ class AppConstants {
   // Storage Keys
   static const String themeKey = 'theme_mode';
   static const String languageKey = 'language_code';
-  static const String todosBoxKey = 'todos';
 
   // Network
   static const int connectTimeout = 30000;
@@ -14,7 +13,6 @@ class AppConstants {
 
   // Routes
   static const String homeRoute = '/';
-  static const String todoRoute = '/todo';
   static const String debugRoute = '/debug';
 
   // Error Messages

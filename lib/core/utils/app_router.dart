@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../../features/debug/debug_screen.dart';
-import '../../features/todo/presentation/pages/settings_page.dart';
-import '../../features/todo/presentation/pages/todo_list_page.dart';
 import '../../features/bible/presentation/pages/bible_reader_screen.dart';
 
 class AppRouter {
@@ -13,16 +11,6 @@ class AppRouter {
         path: '/',
         name: 'home',
         builder: (context, state) => const BibleReaderScreen(),
-      ),
-      GoRoute(
-        path: '/todo',
-        name: 'todo',
-        builder: (context, state) => const TodoListPage(),
-      ),
-      GoRoute(
-        path: '/settings',
-        name: 'settings',
-        builder: (context, state) => const SettingsPage(),
       ),
       GoRoute(
         path: '/debug',

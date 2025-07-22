@@ -1,10 +1,14 @@
 import 'package:flutter/material.dart';
 
-class MenuBarWidget extends StatelessWidget {
+class AppBottomNavigationBar extends StatelessWidget {
+  final int currentIndex;
+  final ValueChanged<int> onTap;
   final VoidCallback onMoreTap;
 
-  const MenuBarWidget({
+  const AppBottomNavigationBar({
     super.key,
+    required this.currentIndex,
+    required this.onTap,
     required this.onMoreTap,
   });
 
@@ -27,20 +31,20 @@ class MenuBarWidget extends StatelessWidget {
           _MenuButton(
             icon: Icons.home,
             label: 'Home',
-            onTap: () {},
-            isActive: false,
+            onTap: () => onTap(0),
+            isActive: currentIndex == 0,
           ),
           _MenuButton(
             icon: Icons.book,
             label: 'Bible',
-            onTap: () {},
-            isActive: true,
-          ), // Active item
+            onTap: () => onTap(1),
+            isActive: currentIndex == 1,
+          ),
           _MenuButton(
             icon: Icons.calendar_today,
             label: 'Plans',
-            onTap: () {},
-            isActive: false,
+            onTap: () => onTap(2),
+            isActive: currentIndex == 2,
           ),
           _MenuButton(
             icon: Icons.more_horiz,

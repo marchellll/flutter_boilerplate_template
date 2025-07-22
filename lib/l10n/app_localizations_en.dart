@@ -9,40 +9,25 @@ class AppLocalizationsEn extends AppLocalizations {
   AppLocalizationsEn([String locale = 'en']) : super(locale);
 
   @override
-  String get appTitle => 'Todo App';
+  String get appTitle => 'Bible Reader';
 
   @override
-  String get todoList => 'Todo List';
+  String get bible => 'Bible';
 
   @override
-  String get addTodo => 'Add Todo';
+  String get home => 'Home';
 
   @override
-  String get editTodo => 'Edit Todo';
+  String get plans => 'Plans';
 
   @override
-  String get deleteTodo => 'Delete Todo';
-
-  @override
-  String get todoTitle => 'Todo Title';
-
-  @override
-  String get todoDescription => 'Todo Description';
+  String get more => 'More';
 
   @override
   String get save => 'Save';
 
   @override
   String get cancel => 'Cancel';
-
-  @override
-  String get markAsCompleted => 'Mark as Completed';
-
-  @override
-  String get markAsIncomplete => 'Mark as Incomplete';
-
-  @override
-  String get noTodos => 'No todos yet. Add one!';
 
   @override
   String get darkMode => 'Dark Mode';

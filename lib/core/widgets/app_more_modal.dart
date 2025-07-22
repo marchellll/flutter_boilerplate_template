@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 
-class MoreModal extends StatelessWidget {
-  const MoreModal({super.key});
+class AppMoreModal extends StatelessWidget {
+  const AppMoreModal({super.key});
 
   static void show(BuildContext context) {
     showModalBottomSheet(
       context: context,
-      builder: (context) => const MoreModal(),
+      builder: (context) => const AppMoreModal(),
     );
   }
 

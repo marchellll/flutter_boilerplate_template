@@ -1,31 +1,23 @@
 {
-  "appTitle": "Todo App",
+  "appTitle": "Bible Reader",
   "@appTitle": {
     "description": "Title of the application"
   },
-  "todoList": "Todo List",
-  "@todoList": {
-    "description": "Title for todo list"
+  "bible": "Bible",
+  "@bible": {
+    "description": "Bible section title"
   },
-  "addTodo": "Add Todo",
-  "@addTodo": {
-    "description": "Button text to add todo"
+  "home": "Home",
+  "@home": {
+    "description": "Home section title"
   },
-  "editTodo": "Edit Todo",
-  "@editTodo": {
-    "description": "Button text to edit todo"
+  "plans": "Plans",
+  "@plans": {
+    "description": "Reading plans section title"
   },
-  "deleteTodo": "Delete Todo",
-  "@deleteTodo": {
-    "description": "Button text to delete todo"
-  },
-  "todoTitle": "Todo Title",
-  "@todoTitle": {
-    "description": "Label for todo title input"
-  },
-  "todoDescription": "Todo Description",
-  "@todoDescription": {
-    "description": "Label for todo description input"
+  "more": "More",
+  "@more": {
+    "description": "More options section title"
   },
   "save": "Save",
   "@save": {
@@ -34,18 +26,6 @@
   "cancel": "Cancel",
   "@cancel": {
     "description": "Cancel button text"
-  },
-  "markAsCompleted": "Mark as Completed",
-  "@markAsCompleted": {
-    "description": "Action to mark todo as completed"
-  },
-  "markAsIncomplete": "Mark as Incomplete",
-  "@markAsIncomplete": {
-    "description": "Action to mark todo as incomplete"
-  },
-  "noTodos": "No todos yet. Add one!",
-  "@noTodos": {
-    "description": "Message when no todos exist"
   },
   "darkMode": "Dark Mode",
   "@darkMode": {

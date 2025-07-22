@@ -101,44 +101,32 @@ abstract class AppLocalizations {
   /// Title of the application
   ///
   /// In en, this message translates to:
-  /// **'Todo App'**
+  /// **'Bible Reader'**
   String get appTitle;
 
-  /// Title for todo list
+  /// Bible section title
   ///
   /// In en, this message translates to:
-  /// **'Todo List'**
-  String get todoList;
+  /// **'Bible'**
+  String get bible;
 
-  /// Button text to add todo
+  /// Home section title
   ///
   /// In en, this message translates to:
-  /// **'Add Todo'**
-  String get addTodo;
+  /// **'Home'**
+  String get home;
 
-  /// Button text to edit todo
+  /// Reading plans section title
   ///
   /// In en, this message translates to:
-  /// **'Edit Todo'**
-  String get editTodo;
+  /// **'Plans'**
+  String get plans;
 
-  /// Button text to delete todo
+  /// More options section title
   ///
   /// In en, this message translates to:
-  /// **'Delete Todo'**
-  String get deleteTodo;
-
-  /// Label for todo title input
-  ///
-  /// In en, this message translates to:
-  /// **'Todo Title'**
-  String get todoTitle;
-
-  /// Label for todo description input
-  ///
-  /// In en, this message translates to:
-  /// **'Todo Description'**
-  String get todoDescription;
+  /// **'More'**
+  String get more;
 
   /// Save button text
   ///
@@ -151,24 +139,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Cancel'**
   String get cancel;
-
-  /// Action to mark todo as completed
-  ///
-  /// In en, this message translates to:
-  /// **'Mark as Completed'**
-  String get markAsCompleted;
-
-  /// Action to mark todo as incomplete
-  ///
-  /// In en, this message translates to:
-  /// **'Mark as Incomplete'**
-  String get markAsIncomplete;
-
-  /// Message when no todos exist
-  ///
-  /// In en, this message translates to:
-  /// **'No todos yet. Add one!'**
-  String get noTodos;
 
   /// Dark mode setting
   ///

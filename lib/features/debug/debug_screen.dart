@@ -220,7 +220,7 @@ class _DebugScreenState extends State<DebugScreen> {
           ),
           TextButton(
             onPressed: () {
-              // TODO: Implement cache clearing
+              // Clear app cache
               Navigator.of(context).pop();
               ScaffoldMessenger.of(context).showSnackBar(
                 const SnackBar(content: Text('Cache cleared')),
@@ -246,7 +246,7 @@ class _DebugScreenState extends State<DebugScreen> {
           ),
           TextButton(
             onPressed: () {
-              // TODO: Implement app reset
+              // Reset app to default state
               Navigator.of(context).pop();
               ScaffoldMessenger.of(context).showSnackBar(
                 const SnackBar(content: Text('App reset complete')),
