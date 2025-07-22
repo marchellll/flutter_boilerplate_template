@@ -1,314 +1,146 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:equatable/equatable.dart';
 import 'package:injectable/injectable.dart';
-import '../../domain/usecases/get_books.dart';
-import '../../domain/usecases/get_verses.dart';
-import '../../domain/usecases/get_bible_versions.dart';
-import '../../domain/repositories/bible_repository.dart';
-import '../../domain/entities/highlight.dart';
-import '../../domain/entities/note.dart';
-import 'bible_reader_event.dart';
-import 'bible_reader_state.dart';
+import '../models/bible_reader_models.dart';
 
+// Events
+abstract class BibleReaderEvent extends Equatable {
+  const BibleReaderEvent();
+  @override
+  List<Object?> get props => [];
+}
+
+class LoadInitialData extends BibleReaderEvent {
+  const LoadInitialData();
+}
+
+class NavigateToNextChapter extends BibleReaderEvent {
+  const NavigateToNextChapter();
+}
+
+class NavigateToPreviousChapter extends BibleReaderEvent {
+  const NavigateToPreviousChapter();
+}
+
+class NavigateToChapter extends BibleReaderEvent {
+  final int chapter;
+  const NavigateToChapter(this.chapter);
+
+  @override
+  List<Object?> get props => [chapter];
+}
+
+class ToggleBars extends BibleReaderEvent {
+  const ToggleBars();
+}
+
+class UpdateScrollPosition extends BibleReaderEvent {
+  final double scrollOffset;
+  const UpdateScrollPosition(this.scrollOffset);
+
+  @override
+  List<Object?> get props => [scrollOffset];
+}
+
+// BLoC
 @injectable
 class BibleReaderBloc extends Bloc<BibleReaderEvent, BibleReaderState> {
-  final GetBooks _getBooks;
-  final GetVerses _getVerses;
-  final GetBibleVersions _getBibleVersions;
-  final BibleRepository _repository;
-
-  BibleReaderBloc(
-    this._getBooks,
-    this._getVerses,
-    this._getBibleVersions,
-    this._repository,
-  ) : super(const BibleReaderInitial()) {
+  BibleReaderBloc() : super(const BibleReaderState()) {
     on<LoadInitialData>(_onLoadInitialData);
-    on<LoadChapter>(_onLoadChapter);
     on<NavigateToNextChapter>(_onNavigateToNextChapter);
     on<NavigateToPreviousChapter>(_onNavigateToPreviousChapter);
-    on<NavigateToReference>(_onNavigateToReference);
-    on<ChangeVersion>(_onChangeVersion);
-    on<AddHighlight>(_onAddHighlight);
-    on<AddNote>(_onAddNote);
+    on<NavigateToChapter>(_onNavigateToChapter);
+    on<ToggleBars>(_onToggleBars);
+    on<UpdateScrollPosition>(_onUpdateScrollPosition);
   }
 
-  Future<void> _onLoadInitialData(
-    LoadInitialData event,
-    Emitter<BibleReaderState> emit,
-  ) async {
-    emit(const BibleReaderLoading());
+  void _onLoadInitialData(LoadInitialData event, Emitter<BibleReaderState> emit) {
+    emit(state.copyWith(isLoading: true));
 
-    try {
-      // Load all required data
-      final booksResult = await _getBooks();
-      final versionsResult = await _getBibleVersions();
-      final defaultVersionResult = await _repository.getDefaultVersion();
+    // Dummy Genesis 1 data - Indonesian version
+    final dummyVerses = [
+      const VerseData(number: 1, text: "Pada mulanya Allah menciptakan langit dan bumi."),
+      const VerseData(number: 2, text: "Bumi belum berbentuk dan kosong; gelap gulita menutupi samudera raya, dan Roh Allah melayang-layang di atas permukaan air."),
+      const VerseData(number: 3, text: "Berfirmanlah Allah: \"Jadilah terang.\" Lalu terang itu jadi.", isHighlighted: true, highlightColor: "#FFE082"),
+      const VerseData(number: 4, text: "Allah melihat bahwa terang itu baik, lalu dipisahkan-Nyalah terang itu dari gelap."),
+      const VerseData(number: 5, text: "Dan Allah menamai terang itu siang, dan gelap itu malam. Jadilah petang dan jadilah pagi, itulah hari pertama.", hasNote: true),
+      const VerseData(number: 6, text: "Berfirmanlah Allah: \"Jadilah cakrawala di tengah segala air untuk memisahkan air dari air.\""),
+      const VerseData(number: 7, text: "Maka Allah menjadikan cakrawala dan memisahkan air yang ada di bawah cakrawala itu dari air yang ada di atasnya. Dan jadilah demikian."),
+      const VerseData(number: 8, text: "Lalu Allah menamai cakrawala itu langit. Jadilah petang dan jadilah pagi, itulah hari kedua."),
+      const VerseData(number: 9, text: "Berfirmanlah Allah: \"Hendaklah segala air yang di bawah langit berkumpul pada satu tempat, sehingga kelihatan yang kering.\" Dan jadilah demikian."),
+      const VerseData(number: 10, text: "Lalu Allah menamai yang kering itu darat, dan kumpulan air itu dinamai-Nya laut. Allah melihat bahwa semuanya itu baik."),
+    ];
 
-      booksResult.fold(
-        (failure) => emit(BibleReaderError(failure.message)),
-        (books) async {
-          versionsResult.fold(
-            (failure) => emit(BibleReaderError(failure.message)),
-            (versions) async {
-              defaultVersionResult.fold(
-                (failure) => emit(BibleReaderError(failure.message)),
-                (defaultVersion) async {
-                  final version = defaultVersion ?? versions.first;
-                  final firstBook = books.first;
-
-                  // Load Genesis Chapter 1 by default
-                  final versesResult = await _getVerses(
-                    bookId: firstBook.id,
-                    chapterNumber: 1,
-                    versionId: version.id,
-                  );
-
-                  versesResult.fold(
-                    (failure) => emit(BibleReaderError(failure.message)),
-                    (verses) async {
-                      // Load highlights and notes for this chapter
-                      final highlightsResult = await _repository.getHighlightsForChapter(
-                        firstBook.id,
-                        1,
-                      );
-                      final notesResult = await _repository.getNotesForChapter(
-                        firstBook.id,
-                        1,
-                      );
-
-                      final highlights = highlightsResult.fold(
-                        (l) => <Highlight>[],
-                        (r) => r,
-                      );
-                      final notes = notesResult.fold(
-                        (l) => <Note>[],
-                        (r) => r,
-                      );
-
-                      emit(BibleReaderLoaded(
-                        currentBook: firstBook,
-                        currentChapter: 1,
-                        verses: verses,
-                        currentVersion: version,
-                        availableVersions: versions,
-                        books: books,
-                        highlights: highlights,
-                        notes: notes,
-                      ));
-                    },
-                  );
-                },
-              );
-            },
-          );
-        },
-      );
-    } catch (e) {
-      emit(BibleReaderError('Failed to load initial data: ${e.toString()}'));
-    }
+    emit(state.copyWith(
+      verses: dummyVerses,
+      isLoading: false,
+    ));
   }
 
-  Future<void> _onLoadChapter(
-    LoadChapter event,
-    Emitter<BibleReaderState> emit,
-  ) async {
-    if (state is BibleReaderLoaded) {
-      final currentState = state as BibleReaderLoaded;
-      emit(const BibleReaderLoading());
-
-      try {
-        final bookResult = await _repository.getBookById(event.bookId);
-        final versesResult = await _getVerses(
-          bookId: event.bookId,
-          chapterNumber: event.chapterNumber,
-          versionId: event.versionId,
-        );
-
-        bookResult.fold(
-          (failure) => emit(BibleReaderError(failure.message)),
-          (book) async {
-            if (book == null) {
-              emit(const BibleReaderError('Book not found'));
-              return;
-            }
-
-            versesResult.fold(
-              (failure) => emit(BibleReaderError(failure.message)),
-              (verses) async {
-                // Load highlights and notes for this chapter
-                final highlightsResult = await _repository.getHighlightsForChapter(
-                  event.bookId,
-                  event.chapterNumber,
-                );
-                final notesResult = await _repository.getNotesForChapter(
-                  event.bookId,
-                  event.chapterNumber,
-                );
-
-                final highlights = highlightsResult.fold(
-                  (l) => <Highlight>[],
-                  (r) => r,
-                );
-                final notes = notesResult.fold(
-                  (l) => <Note>[],
-                  (r) => r,
-                );
-
-                emit(currentState.copyWith(
-                  currentBook: book,
-                  currentChapter: event.chapterNumber,
-                  verses: verses,
-                  highlights: highlights,
-                  notes: notes,
-                ));
-              },
-            );
-          },
-        );
-      } catch (e) {
-        emit(BibleReaderError('Failed to load chapter: ${e.toString()}'));
-      }
-    }
-  }
-
-  Future<void> _onNavigateToNextChapter(
-    NavigateToNextChapter event,
-    Emitter<BibleReaderState> emit,
-  ) async {
-    if (state is BibleReaderLoaded) {
-      final currentState = state as BibleReaderLoaded;
-      final currentBook = currentState.currentBook;
-      final currentChapter = currentState.currentChapter;
-
-      if (currentChapter < currentBook.chapterCount) {
-        // Next chapter in the same book
-        add(LoadChapter(
-          bookId: currentBook.id,
-          chapterNumber: currentChapter + 1,
-          versionId: currentState.currentVersion.id,
-        ));
-      } else {
-        // Next book, chapter 1
-        final books = currentState.books;
-        final currentBookIndex = books.indexWhere((book) => book.id == currentBook.id);
-        if (currentBookIndex < books.length - 1) {
-          final nextBook = books[currentBookIndex + 1];
-          add(LoadChapter(
-            bookId: nextBook.id,
-            chapterNumber: 1,
-            versionId: currentState.currentVersion.id,
-          ));
-        }
-      }
-    }
-  }
-
-  Future<void> _onNavigateToPreviousChapter(
-    NavigateToPreviousChapter event,
-    Emitter<BibleReaderState> emit,
-  ) async {
-    if (state is BibleReaderLoaded) {
-      final currentState = state as BibleReaderLoaded;
-      final currentBook = currentState.currentBook;
-      final currentChapter = currentState.currentChapter;
-
-      if (currentChapter > 1) {
-        // Previous chapter in the same book
-        add(LoadChapter(
-          bookId: currentBook.id,
-          chapterNumber: currentChapter - 1,
-          versionId: currentState.currentVersion.id,
-        ));
-      } else {
-        // Previous book, last chapter
-        final books = currentState.books;
-        final currentBookIndex = books.indexWhere((book) => book.id == currentBook.id);
-        if (currentBookIndex > 0) {
-          final previousBook = books[currentBookIndex - 1];
-          add(LoadChapter(
-            bookId: previousBook.id,
-            chapterNumber: previousBook.chapterCount,
-            versionId: currentState.currentVersion.id,
-          ));
-        }
-      }
-    }
-  }
-
-  Future<void> _onNavigateToReference(
-    NavigateToReference event,
-    Emitter<BibleReaderState> emit,
-  ) async {
-    if (state is BibleReaderLoaded) {
-      final currentState = state as BibleReaderLoaded;
-      add(LoadChapter(
-        bookId: event.bookId,
-        chapterNumber: event.chapterNumber,
-        versionId: currentState.currentVersion.id,
+  void _onNavigateToNextChapter(NavigateToNextChapter event, Emitter<BibleReaderState> emit) {
+    if (state.currentBook == 'Genesis' && state.currentChapter < 50) {
+      emit(state.copyWith(
+        currentChapter: state.currentChapter + 1,
+        verses: _getDummyVersesForChapter(state.currentChapter + 1),
       ));
     }
   }
 
-  Future<void> _onChangeVersion(
-    ChangeVersion event,
-    Emitter<BibleReaderState> emit,
-  ) async {
-    if (state is BibleReaderLoaded) {
-      final currentState = state as BibleReaderLoaded;
-      final newVersion = currentState.availableVersions
-          .firstWhere((version) => version.id == event.versionId);
-
-      add(LoadChapter(
-        bookId: currentState.currentBook.id,
-        chapterNumber: currentState.currentChapter,
-        versionId: event.versionId,
+  void _onNavigateToPreviousChapter(NavigateToPreviousChapter event, Emitter<BibleReaderState> emit) {
+    if (state.currentChapter > 1) {
+      emit(state.copyWith(
+        currentChapter: state.currentChapter - 1,
+        verses: _getDummyVersesForChapter(state.currentChapter - 1),
       ));
-
-      emit(currentState.copyWith(currentVersion: newVersion));
     }
   }
 
-  Future<void> _onAddHighlight(
-    AddHighlight event,
-    Emitter<BibleReaderState> emit,
-  ) async {
-    if (state is BibleReaderLoaded) {
-      final currentState = state as BibleReaderLoaded;
-      final result = await _repository.addHighlight(event.highlight);
-
-      result.fold(
-        (failure) => emit(BibleReaderError(failure.message)),
-        (_) {
-          // Reload highlights for current chapter
-          add(LoadChapter(
-            bookId: currentState.currentBook.id,
-            chapterNumber: currentState.currentChapter,
-            versionId: currentState.currentVersion.id,
-          ));
-        },
-      );
+  void _onNavigateToChapter(NavigateToChapter event, Emitter<BibleReaderState> emit) {
+    if (event.chapter >= 1 && event.chapter <= 50) { // Genesis has 50 chapters
+      emit(state.copyWith(
+        currentChapter: event.chapter,
+        verses: _getDummyVersesForChapter(event.chapter),
+      ));
     }
   }
 
-  Future<void> _onAddNote(
-    AddNote event,
-    Emitter<BibleReaderState> emit,
-  ) async {
-    if (state is BibleReaderLoaded) {
-      final currentState = state as BibleReaderLoaded;
-      final result = await _repository.addNote(event.note);
+  void _onToggleBars(ToggleBars event, Emitter<BibleReaderState> emit) {
+    emit(state.copyWith(
+      isTopBarVisible: !state.isTopBarVisible,
+      isMenuBarVisible: !state.isMenuBarVisible,
+    ));
+  }
 
-      result.fold(
-        (failure) => emit(BibleReaderError(failure.message)),
-        (_) {
-          // Reload notes for current chapter
-          add(LoadChapter(
-            bookId: currentState.currentBook.id,
-            chapterNumber: currentState.currentChapter,
-            versionId: currentState.currentVersion.id,
-          ));
-        },
-      );
+  void _onUpdateScrollPosition(UpdateScrollPosition event, Emitter<BibleReaderState> emit) {
+    // Show bars when at the top (scroll offset < 100), hide when scrolled down
+    final bool shouldShowBars = event.scrollOffset < 100;
+
+    // Only emit if the visibility state changes to avoid unnecessary rebuilds
+    if (shouldShowBars != state.isMenuBarVisible || shouldShowBars != state.isTopBarVisible) {
+      emit(state.copyWith(
+        isTopBarVisible: shouldShowBars,
+        isMenuBarVisible: shouldShowBars,
+      ));
+    }
+  }
+
+  List<VerseData> _getDummyVersesForChapter(int chapter) {
+    if (chapter == 1) {
+      return [
+        const VerseData(number: 1, text: "Pada mulanya Allah menciptakan langit dan bumi."),
+        const VerseData(number: 2, text: "Bumi belum berbentuk dan kosong; gelap gulita menutupi samudera raya, dan Roh Allah melayang-layang di atas permukaan air."),
+        const VerseData(number: 3, text: "Berfirmanlah Allah: \"Jadilah terang.\" Lalu terang itu jadi.", isHighlighted: true, highlightColor: "#FFE082"),
+        const VerseData(number: 4, text: "Allah melihat bahwa terang itu baik, lalu dipisahkan-Nyalah terang itu dari gelap."),
+        const VerseData(number: 5, text: "Dan Allah menamai terang itu siang, dan gelap itu malam. Jadilah petang dan jadilah pagi, itulah hari pertama.", hasNote: true),
+      ];
+    } else {
+      return [
+        VerseData(number: 1, text: "Ini adalah ${state.currentBookLocal} pasal $chapter, ayat 1. Lorem ipsum dolor sit amet, consectetur adipiscing elit."),
+        VerseData(number: 2, text: "Ayat kedua dari pasal $chapter dengan teks yang lebih panjang untuk testing scrolling dan layout."),
+        VerseData(number: 3, text: "Ayat ketiga dari pasal $chapter untuk demonstrasi navigasi antar pasal dengan gesture."),
+        VerseData(number: 4, text: "Ayat keempat menunjukkan bagaimana verse numbers ditampilkan sebagai superscript."),
+        VerseData(number: 5, text: "Ayat kelima dengan teks yang cukup panjang untuk menguji line spacing dan typography sesuai dengan guidelines design."),
+      ];
     }
   }
 }

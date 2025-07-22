@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../bloc/simple_bible_bloc.dart';
+import '../bloc/bible_reader_bloc.dart';
 
 class NavigationModal {
   static void show(BuildContext context) {
@@ -313,7 +313,7 @@ class _GridNavigationTab extends StatelessWidget {
                 return InkWell(
                   onTap: () {
                     // Navigate to chapter
-                    context.read<SimpleBibleBloc>().add(NavigateToChapter(chapter));
+                    context.read<BibleReaderBloc>().add(NavigateToChapter(chapter));
                     Navigator.pop(context);
                   },
                   child: Container(

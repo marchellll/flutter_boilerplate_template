@@ -19,7 +19,7 @@ class VerseData extends Equatable {
   List<Object?> get props => [number, text, isHighlighted, highlightColor, hasNote];
 }
 
-class SimpleBibleState extends Equatable {
+class BibleReaderState extends Equatable {
   final String currentBook;
   final String currentBookLocal;
   final int currentChapter;
@@ -30,7 +30,7 @@ class SimpleBibleState extends Equatable {
   final bool isMenuBarVisible;
   final String? error;
 
-  const SimpleBibleState({
+  const BibleReaderState({
     this.currentBook = 'Genesis',
     this.currentBookLocal = 'Kejadian',
     this.currentChapter = 1,
@@ -42,7 +42,7 @@ class SimpleBibleState extends Equatable {
     this.error,
   });
 
-  SimpleBibleState copyWith({
+  BibleReaderState copyWith({
     String? currentBook,
     String? currentBookLocal,
     int? currentChapter,
@@ -53,7 +53,7 @@ class SimpleBibleState extends Equatable {
     bool? isMenuBarVisible,
     String? error,
   }) {
-    return SimpleBibleState(
+    return BibleReaderState(
       currentBook: currentBook ?? this.currentBook,
       currentBookLocal: currentBookLocal ?? this.currentBookLocal,
       currentChapter: currentChapter ?? this.currentChapter,
