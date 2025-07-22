@@ -18,12 +18,21 @@ class _SimpleBibleReaderScreenState extends State<SimpleBibleReaderScreen> {
     super.initState();
     // Load initial data
     context.read<SimpleBibleBloc>().add(const LoadInitialData());
+
+    // Add scroll listener for auto-hide functionality
+    _scrollController.addListener(_onScroll);
   }
 
   @override
   void dispose() {
+    _scrollController.removeListener(_onScroll);
     _scrollController.dispose();
     super.dispose();
+  }
+
+  void _onScroll() {
+    // Update scroll position in BLoC to handle bar visibility
+    context.read<SimpleBibleBloc>().add(UpdateScrollPosition(_scrollController.offset));
   }
 
   @override
@@ -61,10 +70,15 @@ class _SimpleBibleReaderScreenState extends State<SimpleBibleReaderScreen> {
                   ),
 
                   // Floating Verse Pill FAB
-                  Positioned(
+                  AnimatedPositioned(
+                    duration: const Duration(milliseconds: 300),
+                    curve: Curves.easeInOut,
                     bottom: state.isMenuBarVisible ? 100 : 20,
+                    left: 20,
                     right: 20,
-                    child: _buildFloatingPill(state),
+                    child: Center(
+                      child: _buildFloatingPill(state),
+                    ),
                   ),
                 ],
               ),
@@ -184,7 +198,6 @@ class _SimpleBibleReaderScreenState extends State<SimpleBibleReaderScreen> {
                               : null,
                           borderRadius: verse.isHighlighted ? BorderRadius.circular(2) : null,
                         ),
-                        padding: verse.isHighlighted ? const EdgeInsets.symmetric(horizontal: 4, vertical: 2) : null,
                         child: RichText(
                           text: TextSpan(
                             children: [
@@ -276,37 +289,73 @@ class _SimpleBibleReaderScreenState extends State<SimpleBibleReaderScreen> {
   }
 
   Widget _buildFloatingPill(SimpleBibleState state) {
-    return GestureDetector(
-      onTap: () {
-        // TODO: Open navigation modal
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Navigation modal coming soon!')),
-        );
-      },
-      child: AnimatedOpacity(
-        duration: const Duration(milliseconds: 300),
-        opacity: state.isTopBarVisible ? 1.0 : 0.7,
-        child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-          decoration: BoxDecoration(
-            color: Theme.of(context).primaryColor,
-            borderRadius: BorderRadius.circular(24),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withValues(alpha: 0.2),
-                blurRadius: 8,
-                offset: const Offset(0, 4),
-              ),
-            ],
-          ),
-          child: Text(
-            '${state.currentVersion} | ${state.currentBookLocal} ${state.currentChapter}',
-            style: const TextStyle(
-              color: Colors.white,
-              fontSize: 14,
-              fontWeight: FontWeight.w500,
+    return AnimatedOpacity(
+      duration: const Duration(milliseconds: 300),
+      opacity: state.isTopBarVisible ? 1.0 : 0.7,
+      child: Container(
+        decoration: BoxDecoration(
+          color: Theme.of(context).primaryColor,
+          borderRadius: BorderRadius.circular(28),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.2),
+              blurRadius: 8,
+              offset: const Offset(0, 4),
             ),
-          ),
+          ],
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            // Version button
+            GestureDetector(
+              onTap: () {
+                // TODO: Open version picker modal
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text('Version picker coming soon!')),
+                );
+              },
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+                child: Text(
+                  state.currentVersion,
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 16,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              ),
+            ),
+
+            // Vertical separator
+            Container(
+              width: 1,
+              height: 24,
+              color: Colors.white.withValues(alpha: 0.3),
+            ),
+
+            // Chapter reference button
+            GestureDetector(
+              onTap: () {
+                // TODO: Open navigation modal
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text('Navigation modal coming soon!')),
+                );
+              },
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+                child: Text(
+                  '${state.currentBookLocal} ${state.currentChapter}',
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 16,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              ),
+            ),
+          ],
         ),
       ),
     );

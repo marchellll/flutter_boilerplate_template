@@ -26,6 +26,14 @@ class ToggleBars extends SimpleBibleEvent {
   const ToggleBars();
 }
 
+class UpdateScrollPosition extends SimpleBibleEvent {
+  final double scrollOffset;
+  const UpdateScrollPosition(this.scrollOffset);
+
+  @override
+  List<Object?> get props => [scrollOffset];
+}
+
 // BLoC
 @injectable
 class SimpleBibleBloc extends Bloc<SimpleBibleEvent, SimpleBibleState> {
@@ -34,6 +42,7 @@ class SimpleBibleBloc extends Bloc<SimpleBibleEvent, SimpleBibleState> {
     on<NavigateToNextChapter>(_onNavigateToNextChapter);
     on<NavigateToPreviousChapter>(_onNavigateToPreviousChapter);
     on<ToggleBars>(_onToggleBars);
+    on<UpdateScrollPosition>(_onUpdateScrollPosition);
   }
 
   void _onLoadInitialData(LoadInitialData event, Emitter<SimpleBibleState> emit) {
@@ -82,6 +91,19 @@ class SimpleBibleBloc extends Bloc<SimpleBibleEvent, SimpleBibleState> {
       isTopBarVisible: !state.isTopBarVisible,
       isMenuBarVisible: !state.isMenuBarVisible,
     ));
+  }
+
+  void _onUpdateScrollPosition(UpdateScrollPosition event, Emitter<SimpleBibleState> emit) {
+    // Show bars when at the top (scroll offset < 100), hide when scrolled down
+    final bool shouldShowBars = event.scrollOffset < 100;
+
+    // Only emit if the visibility state changes to avoid unnecessary rebuilds
+    if (shouldShowBars != state.isMenuBarVisible || shouldShowBars != state.isTopBarVisible) {
+      emit(state.copyWith(
+        isTopBarVisible: shouldShowBars,
+        isMenuBarVisible: shouldShowBars,
+      ));
+    }
   }
 
   List<VerseData> _getDummyVersesForChapter(int chapter) {
