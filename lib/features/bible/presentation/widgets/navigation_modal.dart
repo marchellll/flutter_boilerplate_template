@@ -87,7 +87,7 @@ class _DirectNavigationTab extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final TextEditingController controller = TextEditingController();
-    
+
     return Padding(
       padding: const EdgeInsets.all(20),
       child: Column(

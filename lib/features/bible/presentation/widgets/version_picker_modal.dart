@@ -65,12 +65,12 @@ class VersionPickerModal {
                       ),
                       const SizedBox(height: 8),
                       ..._buildAvailableVersions(),
-                      
+
                       const SizedBox(height: 24),
-                      
+
                       // More versions section
                       _MoreVersionsOption(),
-                      
+
                       const SizedBox(height: 20),
                     ],
                   ),
@@ -95,7 +95,7 @@ class VersionPickerModal {
       ('MSG', 'The Message', false),
     ];
 
-    return versions.map((version) => 
+    return versions.map((version) =>
       _VersionOption(
         code: version.$1,
         name: version.$2,
@@ -303,9 +303,9 @@ class ImportVersionModal {
                     children: [
                       // Import from file section
                       _ImportSection(),
-                      
+
                       const SizedBox(height: 24),
-                      
+
                       // Available downloads section
                       const Text(
                         'Available Downloads',
@@ -315,9 +315,9 @@ class ImportVersionModal {
                         ),
                       ),
                       const SizedBox(height: 12),
-                      
+
                       ..._buildDownloadableVersions(),
-                      
+
                       const SizedBox(height: 20),
                     ],
                   ),
@@ -342,7 +342,7 @@ class ImportVersionModal {
       ('RSV', 'Revised Standard Version', '1.9 MB'),
     ];
 
-    return versions.map((version) => 
+    return versions.map((version) =>
       _DownloadableVersion(
         code: version.$1,
         name: version.$2,
