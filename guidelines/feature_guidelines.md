@@ -26,6 +26,7 @@ SafeArea
 - VerseNumber: 12px / 16 lh / Medium, `#9AA0A6` (light).
 - VerseText: 18px / 28 lh / Regular.
 - Page horizontal padding: 20px.
+- book and chapter titles should be in the local language (e.g., "Kejadian" for Genesis in Indonesian).
 
 ---
 
@@ -94,6 +95,8 @@ hide this bar entirely when the top bar is hidden, and show it when the top bar 
 - Content: `ESV | Genesis 1` (or current version/ref).
 - Tap → open **Navigation Modal** (DirectDialer / Grid).
 - Drag up to expand into Grid Navigation (Drag mode).
+- book and chapter titles should be in the local language (e.g., "Kejadian" for Genesis in Indonesian).
+
 
 ---
 
@@ -191,6 +194,9 @@ If the user enters an invalid book/chapter/verse, nothing will happen, and the i
 If the user select a book from the list, the user can use the dialer to select the chapter and verse.
 
 Typing a full reference like `Mat 6:9` will auto-fill the book, chapter, and verse fields, and automatically navigate to that verse.
+
+Book and chapter titles should be in the local language (e.g., "Kejadian" for Genesis in Indonesian).
+
 
 #### Grid
 Visual grid of chapters/verses, no scroll. Show all chapters in a book, then verses in a chapter after book selected.
