@@ -35,14 +35,16 @@ validate_snake_case() {
 # Function to convert snake_case to camelCase
 snake_to_camel() {
     local snake_case=$1
-    echo $snake_case | sed -r 's/_([a-z])/\U\1/g'
+    # Convert snake_case to camelCase using perl (portable solution)
+    echo $snake_case | perl -pe 's/_(.)/uc($1)/ge'
 }
 
 # Function to convert snake_case to PascalCase
 snake_to_pascal() {
     local snake_case=$1
     local camel_case=$(snake_to_camel $snake_case)
-    echo "${camel_case^}"  # Capitalize first letter
+    # Capitalize first letter (portable way)
+    echo "$(echo ${camel_case:0:1} | tr '[:lower:]' '[:upper:]')${camel_case:1}"
 }
 
 # Function to backup a file before modification
