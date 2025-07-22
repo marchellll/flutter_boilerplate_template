@@ -13,6 +13,7 @@ import 'core/theme/bloc/theme_bloc.dart';
 import 'core/utils/app_router.dart';
 import 'core/utils/shared_preferences_helper.dart';
 import 'features/todo/presentation/bloc/todo_bloc.dart';
+import 'features/bible/presentation/bloc/simple_bible_bloc.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -42,13 +43,16 @@ class MyApp extends StatelessWidget {
         BlocProvider(
           create: (context) => getIt<TodoBloc>(),
         ),
+        BlocProvider(
+          create: (context) => getIt<SimpleBibleBloc>(),
+        ),
       ],
       child: BlocBuilder<ThemeBloc, ThemeState>(
         builder: (context, themeState) {
           return BlocBuilder<LocaleBloc, LocaleState>(
             builder: (context, localeState) {
               return MaterialApp.router(
-                title: 'Todo App',
+                title: 'Bible App',
                 debugShowCheckedModeBanner: false,
                 theme: AppTheme.lightTheme,
                 darkTheme: AppTheme.darkTheme,

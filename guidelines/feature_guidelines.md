@@ -50,7 +50,9 @@ SafeArea
 Use a **minimal bar** to avoid clutter. (We won’t copy YouVersion’s full tab bar.)
 
 **Behavior:**
-hide this bar entirely when the top bar is hidden, and show it when the top bar is visible.
+hide this bar entirely when the scroll is not at the top of the chapter.
+
+use solid background color
 
 ### Menu Items (left→right):
 
@@ -123,14 +125,13 @@ Data to pass: book, chapter, verse number, version id.
 ## 6. Gestures
 
 - **Swipe Left/Right (anywhere on reader)** → next/previous chapter
-- **Tap top status area** → reveal top bar
 - **Long press verse** → action sheet
 
 ---
 
 ## 7. States & Edge Cases
 
-- Verse selection state: highlight background lightly (`#FFF9C4` for yellow).
+- Verse selection state: highlight background lightly (goldish) with black text.
 - No audio available: hide Play button.
 - Empty notes/highlights: show “No notes yet” placeholders in managers (not on reader).
 - Loading state: skeleton shimmer for first render.
@@ -143,7 +144,7 @@ Data to pass: book, chapter, verse number, version id.
 ## 9. Theming
 
 - **Light Mode**: White background, dark text.
-- **Dark Mode**: Dark background, light text.
+- **Dark Mode**: perfect black oled background, light text.
 - **System Default**: Follows device theme.
 
 ---
@@ -151,7 +152,7 @@ Data to pass: book, chapter, verse number, version id.
 ## 10. Acceptance Criteria
 
 - [ ] Reader opens on app start.
-- [ ] Top & bottom bars auto-hide correctly.
+- [ ] Bottom bars auto-hide correctly.
 - [ ] Swipe L/R chapter nav works.
 - [ ] Floating pill opens Nav Modal.
 - [ ] Long-press verse opens Action Sheet.

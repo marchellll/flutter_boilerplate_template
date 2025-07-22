@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 import '../../features/debug/debug_screen.dart';
 import '../../features/todo/presentation/pages/settings_page.dart';
 import '../../features/todo/presentation/pages/todo_list_page.dart';
+import '../../features/bible/presentation/pages/simple_bible_reader_screen.dart';
 
 class AppRouter {
   static final GoRouter _router = GoRouter(
@@ -11,6 +12,11 @@ class AppRouter {
       GoRoute(
         path: '/',
         name: 'home',
+        builder: (context, state) => const SimpleBibleReaderScreen(),
+      ),
+      GoRoute(
+        path: '/todo',
+        name: 'todo',
         builder: (context, state) => const TodoListPage(),
       ),
       GoRoute(

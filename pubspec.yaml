@@ -49,6 +49,16 @@ dependencies:
   # Local Storage
   shared_preferences: ^2.3.3
   path_provider: ^2.1.5
+  sqflite: ^2.3.3
+
+  # File Operations
+  file_picker: ^8.1.4
+
+  # Audio
+  just_audio: ^0.9.42
+
+  # Notifications
+  flutter_local_notifications: ^19.3.1
 
   # JSON Serialization
   json_annotation: ^4.9.0

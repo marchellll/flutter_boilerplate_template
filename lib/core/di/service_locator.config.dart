@@ -14,6 +14,22 @@ import 'package:another_bible/core/network/dio_client.dart' as _i273;
 import 'package:another_bible/core/theme/bloc/theme_bloc.dart' as _i387;
 import 'package:another_bible/core/utils/shared_preferences_helper.dart'
     as _i866;
+import 'package:another_bible/features/bible/data/datasources/database_service.dart'
+    as _i834;
+import 'package:another_bible/features/bible/data/repositories/bible_repository_impl.dart'
+    as _i514;
+import 'package:another_bible/features/bible/domain/repositories/bible_repository.dart'
+    as _i356;
+import 'package:another_bible/features/bible/domain/usecases/get_bible_versions.dart'
+    as _i400;
+import 'package:another_bible/features/bible/domain/usecases/get_books.dart'
+    as _i207;
+import 'package:another_bible/features/bible/domain/usecases/get_verses.dart'
+    as _i159;
+import 'package:another_bible/features/bible/presentation/bloc/bible_reader_bloc.dart'
+    as _i646;
+import 'package:another_bible/features/bible/presentation/bloc/simple_bible_bloc.dart'
+    as _i729;
 import 'package:another_bible/features/todo/data/datasources/todo_local_datasource.dart'
     as _i722;
 import 'package:another_bible/features/todo/data/repositories/todo_repository_impl.dart'
@@ -40,12 +56,34 @@ extension GetItInjectableX on _i174.GetIt {
     _i526.EnvironmentFilter? environmentFilter,
   }) {
     final gh = _i526.GetItHelper(this, environment, environmentFilter);
+    gh.factory<_i729.SimpleBibleBloc>(() => _i729.SimpleBibleBloc());
     gh.singleton<_i273.DioClient>(() => _i273.DioClient());
     gh.singleton<_i866.SharedPreferencesHelper>(
       () => _i866.SharedPreferencesHelper(),
     );
+    gh.singleton<_i834.DatabaseService>(() => _i834.DatabaseService());
+    gh.factory<_i356.BibleRepository>(
+      () => _i514.BibleRepositoryImpl(gh<_i834.DatabaseService>()),
+    );
     gh.factory<_i387.ThemeBloc>(
       () => _i387.ThemeBloc(gh<_i866.SharedPreferencesHelper>()),
+    );
+    gh.factory<_i159.GetVerses>(
+      () => _i159.GetVerses(gh<_i356.BibleRepository>()),
+    );
+    gh.factory<_i400.GetBibleVersions>(
+      () => _i400.GetBibleVersions(gh<_i356.BibleRepository>()),
+    );
+    gh.factory<_i207.GetBooks>(
+      () => _i207.GetBooks(gh<_i356.BibleRepository>()),
+    );
+    gh.factory<_i646.BibleReaderBloc>(
+      () => _i646.BibleReaderBloc(
+        gh<_i207.GetBooks>(),
+        gh<_i159.GetVerses>(),
+        gh<_i400.GetBibleVersions>(),
+        gh<_i356.BibleRepository>(),
+      ),
     );
     gh.factory<_i722.TodoLocalDataSource>(
       () => _i722.TodoLocalDataSourceImpl(),
