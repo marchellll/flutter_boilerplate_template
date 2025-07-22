@@ -18,6 +18,8 @@ These rules tell you (the agentic coder) how to act, what to build, when to ask,
 ## 1. Operating Principles
 
 1. **Clarity over cleverness**: choose explicit, readable code.
+1. SOLID, DRY, KISS, YAGNI principles.
+1. prefer small widgets: extract reusable components, instead of large monolithic widget/page.
 2. **Local-first**: never add network calls unless Phase 2 is enabled.
 3. **Fail noisily on imports**: invalid or encrypted files → clear error.
 4. **Ask only when ambiguous** (see §7).
