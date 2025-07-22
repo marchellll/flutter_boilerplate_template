@@ -21,7 +21,7 @@ class BibleRepositoryImpl implements BibleRepository {
     try {
       final db = await _databaseService.database;
       final maps = await db.query('bible_versions', orderBy: 'is_default DESC, name ASC');
-      
+
       final versions = maps.map((map) => BibleVersion(
         id: map['id'] as String,
         name: map['name'] as String,
@@ -30,7 +30,7 @@ class BibleRepositoryImpl implements BibleRepository {
         description: map['description'] as String,
         isDefault: (map['is_default'] as int) == 1,
       )).toList();
-      
+
       return Right(versions);
     } catch (e) {
       return Left(DatabaseFailure(e.toString()));
@@ -47,9 +47,9 @@ class BibleRepositoryImpl implements BibleRepository {
         whereArgs: [1],
         limit: 1,
       );
-      
+
       if (maps.isEmpty) return const Right(null);
-      
+
       final map = maps.first;
       final version = BibleVersion(
         id: map['id'] as String,
@@ -59,7 +59,7 @@ class BibleRepositoryImpl implements BibleRepository {
         description: map['description'] as String,
         isDefault: (map['is_default'] as int) == 1,
       );
-      
+
       return Right(version);
     } catch (e) {
       return Left(DatabaseFailure(e.toString()));
@@ -71,7 +71,7 @@ class BibleRepositoryImpl implements BibleRepository {
     try {
       final db = await _databaseService.database;
       final maps = await db.query('books', orderBy: 'book_order ASC');
-      
+
       final books = maps.map((map) => Book(
         id: map['id'] as int,
         name: map['name'] as String,
@@ -81,7 +81,7 @@ class BibleRepositoryImpl implements BibleRepository {
         testament: map['testament'] as String,
         order: map['book_order'] as int,
       )).toList();
-      
+
       return Right(books);
     } catch (e) {
       return Left(DatabaseFailure(e.toString()));
@@ -98,9 +98,9 @@ class BibleRepositoryImpl implements BibleRepository {
         whereArgs: [bookId],
         limit: 1,
       );
-      
+
       if (maps.isEmpty) return const Right(null);
-      
+
       final map = maps.first;
       final book = Book(
         id: map['id'] as int,
@@ -111,7 +111,7 @@ class BibleRepositoryImpl implements BibleRepository {
         testament: map['testament'] as String,
         order: map['book_order'] as int,
       );
-      
+
       return Right(book);
     } catch (e) {
       return Left(DatabaseFailure(e.toString()));
@@ -128,9 +128,9 @@ class BibleRepositoryImpl implements BibleRepository {
         whereArgs: ['%$name%', '%$name%', '%$name%'],
         limit: 1,
       );
-      
+
       if (maps.isEmpty) return const Right(null);
-      
+
       final map = maps.first;
       final book = Book(
         id: map['id'] as int,
@@ -141,7 +141,7 @@ class BibleRepositoryImpl implements BibleRepository {
         testament: map['testament'] as String,
         order: map['book_order'] as int,
       );
-      
+
       return Right(book);
     } catch (e) {
       return Left(DatabaseFailure(e.toString()));
@@ -158,14 +158,14 @@ class BibleRepositoryImpl implements BibleRepository {
         whereArgs: [bookId],
         orderBy: 'chapter_number ASC',
       );
-      
+
       final chapters = maps.map((map) => Chapter(
         id: map['id'] as int,
         bookId: map['book_id'] as int,
         chapterNumber: map['chapter_number'] as int,
         verseCount: map['verse_count'] as int,
       )).toList();
-      
+
       return Right(chapters);
     } catch (e) {
       return Left(DatabaseFailure(e.toString()));
@@ -182,9 +182,9 @@ class BibleRepositoryImpl implements BibleRepository {
         whereArgs: [bookId, chapterNumber],
         limit: 1,
       );
-      
+
       if (maps.isEmpty) return const Right(null);
-      
+
       final map = maps.first;
       final chapter = Chapter(
         id: map['id'] as int,
@@ -192,7 +192,7 @@ class BibleRepositoryImpl implements BibleRepository {
         chapterNumber: map['chapter_number'] as int,
         verseCount: map['verse_count'] as int,
       );
-      
+
       return Right(chapter);
     } catch (e) {
       return Left(DatabaseFailure(e.toString()));
@@ -209,7 +209,7 @@ class BibleRepositoryImpl implements BibleRepository {
         whereArgs: [bookId, chapterNumber, versionId],
         orderBy: 'verse_number ASC',
       );
-      
+
       final verses = maps.map((map) => Verse(
         id: map['id'] as int,
         bookId: map['book_id'] as int,
@@ -218,7 +218,7 @@ class BibleRepositoryImpl implements BibleRepository {
         text: map['text'] as String,
         versionId: map['version_id'] as String,
       )).toList();
-      
+
       return Right(verses);
     } catch (e) {
       return Left(DatabaseFailure(e.toString()));
@@ -235,9 +235,9 @@ class BibleRepositoryImpl implements BibleRepository {
         whereArgs: [bookId, chapterNumber, verseNumber, versionId],
         limit: 1,
       );
-      
+
       if (maps.isEmpty) return const Right(null);
-      
+
       final map = maps.first;
       final verse = Verse(
         id: map['id'] as int,
@@ -247,7 +247,7 @@ class BibleRepositoryImpl implements BibleRepository {
         text: map['text'] as String,
         versionId: map['version_id'] as String,
       );
-      
+
       return Right(verse);
     } catch (e) {
       return Left(DatabaseFailure(e.toString()));
@@ -264,7 +264,7 @@ class BibleRepositoryImpl implements BibleRepository {
         WHERE fts MATCH ? AND v.version_id = ?
         ORDER BY v.book_id, v.chapter_number, v.verse_number
       ''', [query, versionId]);
-      
+
       final verses = maps.map((map) => Verse(
         id: map['id'] as int,
         bookId: map['book_id'] as int,
@@ -273,7 +273,7 @@ class BibleRepositoryImpl implements BibleRepository {
         text: map['text'] as String,
         versionId: map['version_id'] as String,
       )).toList();
-      
+
       return Right(verses);
     } catch (e) {
       return Left(DatabaseFailure(e.toString()));
@@ -285,7 +285,7 @@ class BibleRepositoryImpl implements BibleRepository {
     try {
       final db = await _databaseService.database;
       final maps = await db.query('highlights', orderBy: 'created_at DESC');
-      
+
       final highlights = maps.map((map) => Highlight(
         id: map['id'] as int,
         bookId: map['book_id'] as int,
@@ -296,7 +296,7 @@ class BibleRepositoryImpl implements BibleRepository {
         createdAt: DateTime.parse(map['created_at'] as String),
         updatedAt: map['updated_at'] != null ? DateTime.parse(map['updated_at'] as String) : null,
       )).toList();
-      
+
       return Right(highlights);
     } catch (e) {
       return Left(DatabaseFailure(e.toString()));
@@ -313,7 +313,7 @@ class BibleRepositoryImpl implements BibleRepository {
         whereArgs: [bookId, chapterNumber],
         orderBy: 'verse_number ASC',
       );
-      
+
       final highlights = maps.map((map) => Highlight(
         id: map['id'] as int,
         bookId: map['book_id'] as int,
@@ -324,7 +324,7 @@ class BibleRepositoryImpl implements BibleRepository {
         createdAt: DateTime.parse(map['created_at'] as String),
         updatedAt: map['updated_at'] != null ? DateTime.parse(map['updated_at'] as String) : null,
       )).toList();
-      
+
       return Right(highlights);
     } catch (e) {
       return Left(DatabaseFailure(e.toString()));
@@ -385,7 +385,7 @@ class BibleRepositoryImpl implements BibleRepository {
     try {
       final db = await _databaseService.database;
       final maps = await db.query('notes', orderBy: 'created_at DESC');
-      
+
       final notes = maps.map((map) => Note(
         id: map['id'] as int,
         bookId: map['book_id'] as int,
@@ -397,7 +397,7 @@ class BibleRepositoryImpl implements BibleRepository {
         createdAt: DateTime.parse(map['created_at'] as String),
         updatedAt: map['updated_at'] != null ? DateTime.parse(map['updated_at'] as String) : null,
       )).toList();
-      
+
       return Right(notes);
     } catch (e) {
       return Left(DatabaseFailure(e.toString()));
@@ -414,7 +414,7 @@ class BibleRepositoryImpl implements BibleRepository {
         whereArgs: [bookId, chapterNumber],
         orderBy: 'verse_number ASC',
       );
-      
+
       final notes = maps.map((map) => Note(
         id: map['id'] as int,
         bookId: map['book_id'] as int,
@@ -426,7 +426,7 @@ class BibleRepositoryImpl implements BibleRepository {
         createdAt: DateTime.parse(map['created_at'] as String),
         updatedAt: map['updated_at'] != null ? DateTime.parse(map['updated_at'] as String) : null,
       )).toList();
-      
+
       return Right(notes);
     } catch (e) {
       return Left(DatabaseFailure(e.toString()));

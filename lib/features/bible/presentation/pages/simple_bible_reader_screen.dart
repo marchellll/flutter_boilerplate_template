@@ -50,7 +50,7 @@ class _SimpleBibleReaderScreenState extends State<SimpleBibleReaderScreen> {
                   Positioned.fill(
                     child: _buildVerseList(state),
                   ),
-                  
+
                   // Menu Bar (Auto-hide) - No top bar as per guidelines
                   AnimatedPositioned(
                     duration: const Duration(milliseconds: 300),
@@ -59,7 +59,7 @@ class _SimpleBibleReaderScreenState extends State<SimpleBibleReaderScreen> {
                     right: 0,
                     child: _buildMenuBar(),
                   ),
-                  
+
                   // Floating Verse Pill FAB
                   Positioned(
                     bottom: state.isMenuBarVisible ? 100 : 20,
@@ -99,7 +99,7 @@ class _SimpleBibleReaderScreenState extends State<SimpleBibleReaderScreen> {
                             text: state.currentBookLocal,
                             style: TextStyle(
                               fontSize: 28,
-                              height: 36 / 28, 
+                              height: 36 / 28,
                               fontWeight: FontWeight.w600,
                               color: Theme.of(context).textTheme.bodyLarge?.color, // Use theme color
                             ),
@@ -121,7 +121,7 @@ class _SimpleBibleReaderScreenState extends State<SimpleBibleReaderScreen> {
                   // Verses (removed the separate chapter title since it's now combined)
                   final verseIndex = index - 1; // Adjusted index since we removed one title
                   if (verseIndex >= state.verses.length) return null;
-                  
+
                   final verse = state.verses[verseIndex];
                   return Padding(
                     padding: const EdgeInsets.only(bottom: 16),
@@ -131,7 +131,7 @@ class _SimpleBibleReaderScreenState extends State<SimpleBibleReaderScreen> {
                       },
                       child: Container(
                         decoration: BoxDecoration(
-                          color: verse.isHighlighted 
+                          color: verse.isHighlighted
                               ? Color(int.parse(verse.highlightColor!.replaceFirst('#', '0xFF')))
                               : null,
                           borderRadius: verse.isHighlighted ? BorderRadius.circular(2) : null,
@@ -146,7 +146,7 @@ class _SimpleBibleReaderScreenState extends State<SimpleBibleReaderScreen> {
                                   fontSize: 12,
                                   height: 16 / 12,
                                   fontWeight: FontWeight.w500,
-                                  color: verse.isHighlighted 
+                                  color: verse.isHighlighted
                                       ? const Color(0xFF757575) // Darker gray for highlighted verses
                                       : const Color(0xFF9AA0A6),
                                 ),
@@ -157,7 +157,7 @@ class _SimpleBibleReaderScreenState extends State<SimpleBibleReaderScreen> {
                                   fontSize: 18,
                                   height: 28 / 18,
                                   fontWeight: FontWeight.w400,
-                                  color: verse.isHighlighted 
+                                  color: verse.isHighlighted
                                       ? const Color(0xFF212121) // Dark color for highlighted text
                                       : Theme.of(context).textTheme.bodyLarge?.color,
                                 ),

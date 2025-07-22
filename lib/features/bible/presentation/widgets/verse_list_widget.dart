@@ -24,7 +24,7 @@ class VerseListWidget extends StatelessWidget {
           // Swipe right - previous chapter
           context.read<BibleReaderBloc>().add(const NavigateToPreviousChapter());
         } else if (details.primaryVelocity! < -500) {
-          // Swipe left - next chapter  
+          // Swipe left - next chapter
           context.read<BibleReaderBloc>().add(const NavigateToNextChapter());
         }
       },
@@ -35,7 +35,7 @@ class VerseListWidget extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const SizedBox(height: 16), // 8pt grid spacing
-            
+
             // Book Title - H1
             Text(
               state.currentBook.nameLocal, // Use localized name
@@ -45,9 +45,9 @@ class VerseListWidget extends StatelessWidget {
                 fontWeight: FontWeight.w600, // SemiBold
               ),
             ),
-            
+
             const SizedBox(height: 8), // 8pt grid spacing
-            
+
             // Chapter Title - H2
             Text(
               'Chapter ${state.currentChapter}', // TODO: Localize
@@ -58,12 +58,12 @@ class VerseListWidget extends StatelessWidget {
                 color: Colors.grey[600], // Muted
               ),
             ),
-            
+
             const SizedBox(height: 24), // 8pt grid spacing
-            
+
             // Verse List
             ...state.verses.map((verse) => _buildVerseRow(context, verse)),
-            
+
             const SizedBox(height: 100), // Bottom padding for gesture area
           ],
         ),
@@ -73,15 +73,15 @@ class VerseListWidget extends StatelessWidget {
 
   Widget _buildVerseRow(BuildContext context, Verse verse) {
     final isHighlighted = state.highlights.any(
-      (h) => h.bookId == verse.bookId && 
-             h.chapterNumber == verse.chapterNumber && 
+      (h) => h.bookId == verse.bookId &&
+             h.chapterNumber == verse.chapterNumber &&
              h.verseNumber == verse.verseNumber,
     );
-    
-    final highlight = isHighlighted 
+
+    final highlight = isHighlighted
         ? state.highlights.firstWhere(
-            (h) => h.bookId == verse.bookId && 
-                   h.chapterNumber == verse.chapterNumber && 
+            (h) => h.bookId == verse.bookId &&
+                   h.chapterNumber == verse.chapterNumber &&
                    h.verseNumber == verse.verseNumber,
           )
         : null;
@@ -165,9 +165,9 @@ class _VerseActionSheet extends StatelessWidget {
               ),
             ],
           ),
-          
+
           const SizedBox(height: 16),
-          
+
           // Action buttons
           Wrap(
             spacing: 8,
@@ -223,7 +223,7 @@ class _VerseActionSheet extends StatelessWidget {
               ),
             ],
           ),
-          
+
           const SizedBox(height: 16),
         ],
       ),

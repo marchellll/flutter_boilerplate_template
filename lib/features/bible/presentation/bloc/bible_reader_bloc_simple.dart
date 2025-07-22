@@ -1,49 +1,24 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:equatable/equatable.dart';
-import 'package:injectable/injectable.dart';
-import '../models/simple_models.dart';
+import 'bible_reader_event.dart';
+import 'bible_reader_state.dart';
 
-// Events
-abstract class SimpleBibleEvent extends Equatable {
-  const SimpleBibleEvent();
-  @override
-  List<Object?> get props => [];
-}
-
-class LoadInitialData extends SimpleBibleEvent {
-  const LoadInitialData();
-}
-
-class NavigateToNextChapter extends SimpleBibleEvent {
-  const NavigateToNextChapter();
-}
-
-class NavigateToPreviousChapter extends SimpleBibleEvent {
-  const NavigateToPreviousChapter();
-}
-
-class ToggleBars extends SimpleBibleEvent {
-  const ToggleBars();
-}
-
-// BLoC
-@injectable
-class SimpleBibleBloc extends Bloc<SimpleBibleEvent, SimpleBibleState> {
-  SimpleBibleBloc() : super(const SimpleBibleState()) {
+class BibleReaderBloc extends Bloc<BibleReaderEvent, BibleReaderState> {
+  BibleReaderBloc() : super(const BibleReaderState()) {
     on<LoadInitialData>(_onLoadInitialData);
     on<NavigateToNextChapter>(_onNavigateToNextChapter);
     on<NavigateToPreviousChapter>(_onNavigateToPreviousChapter);
-    on<ToggleBars>(_onToggleBars);
+    on<NavigateToReference>(_onNavigateToReference);
+    on<ChangeVersion>(_onChangeVersion);
   }
 
-  void _onLoadInitialData(LoadInitialData event, Emitter<SimpleBibleState> emit) {
+  void _onLoadInitialData(LoadInitialData event, Emitter<BibleReaderState> emit) {
     emit(state.copyWith(isLoading: true));
 
-    // Dummy Genesis 1 data - Indonesian version
+    // Dummy Genesis 1 data
     final dummyVerses = [
       const VerseData(number: 1, text: "Pada mulanya Allah menciptakan langit dan bumi."),
       const VerseData(number: 2, text: "Bumi belum berbentuk dan kosong; gelap gulita menutupi samudera raya, dan Roh Allah melayang-layang di atas permukaan air."),
-      const VerseData(number: 3, text: "Berfirmanlah Allah: \"Jadilah terang.\" Lalu terang itu jadi.", isHighlighted: true, highlightColor: "#FFE082"),
+      const VerseData(number: 3, text: "Berfirmanlah Allah: \"Jadilah terang.\" Lalu terang itu jadi.", isHighlighted: true, highlightColor: "#FFF9C4"),
       const VerseData(number: 4, text: "Allah melihat bahwa terang itu baik, lalu dipisahkan-Nyalah terang itu dari gelap."),
       const VerseData(number: 5, text: "Dan Allah menamai terang itu siang, dan gelap itu malam. Jadilah petang dan jadilah pagi, itulah hari pertama.", hasNote: true),
       const VerseData(number: 6, text: "Berfirmanlah Allah: \"Jadilah cakrawala di tengah segala air untuk memisahkan air dari air.\""),
@@ -59,7 +34,7 @@ class SimpleBibleBloc extends Bloc<SimpleBibleEvent, SimpleBibleState> {
     ));
   }
 
-  void _onNavigateToNextChapter(NavigateToNextChapter event, Emitter<SimpleBibleState> emit) {
+  void _onNavigateToNextChapter(NavigateToNextChapter event, Emitter<BibleReaderState> emit) {
     if (state.currentBook == 'Genesis' && state.currentChapter < 50) {
       emit(state.copyWith(
         currentChapter: state.currentChapter + 1,
@@ -68,7 +43,7 @@ class SimpleBibleBloc extends Bloc<SimpleBibleEvent, SimpleBibleState> {
     }
   }
 
-  void _onNavigateToPreviousChapter(NavigateToPreviousChapter event, Emitter<SimpleBibleState> emit) {
+  void _onNavigateToPreviousChapter(NavigateToPreviousChapter event, Emitter<BibleReaderState> emit) {
     if (state.currentChapter > 1) {
       emit(state.copyWith(
         currentChapter: state.currentChapter - 1,
@@ -77,11 +52,16 @@ class SimpleBibleBloc extends Bloc<SimpleBibleEvent, SimpleBibleState> {
     }
   }
 
-  void _onToggleBars(ToggleBars event, Emitter<SimpleBibleState> emit) {
+  void _onNavigateToReference(NavigateToReference event, Emitter<BibleReaderState> emit) {
+    // For now, just handle Genesis
     emit(state.copyWith(
-      isTopBarVisible: !state.isTopBarVisible,
-      isMenuBarVisible: !state.isMenuBarVisible,
+      currentChapter: event.chapterNumber,
+      verses: _getDummyVersesForChapter(event.chapterNumber),
     ));
+  }
+
+  void _onChangeVersion(ChangeVersion event, Emitter<BibleReaderState> emit) {
+    emit(state.copyWith(currentVersion: event.versionId));
   }
 
   List<VerseData> _getDummyVersesForChapter(int chapter) {
@@ -89,17 +69,15 @@ class SimpleBibleBloc extends Bloc<SimpleBibleEvent, SimpleBibleState> {
       return [
         const VerseData(number: 1, text: "Pada mulanya Allah menciptakan langit dan bumi."),
         const VerseData(number: 2, text: "Bumi belum berbentuk dan kosong; gelap gulita menutupi samudera raya, dan Roh Allah melayang-layang di atas permukaan air."),
-        const VerseData(number: 3, text: "Berfirmanlah Allah: \"Jadilah terang.\" Lalu terang itu jadi.", isHighlighted: true, highlightColor: "#FFE082"),
+        const VerseData(number: 3, text: "Berfirmanlah Allah: \"Jadilah terang.\" Lalu terang itu jadi.", isHighlighted: true, highlightColor: "#FFF9C4"),
         const VerseData(number: 4, text: "Allah melihat bahwa terang itu baik, lalu dipisahkan-Nyalah terang itu dari gelap."),
         const VerseData(number: 5, text: "Dan Allah menamai terang itu siang, dan gelap itu malam. Jadilah petang dan jadilah pagi, itulah hari pertama.", hasNote: true),
       ];
     } else {
       return [
-        VerseData(number: 1, text: "Ini adalah ${state.currentBookLocal} pasal $chapter, ayat 1. Lorem ipsum dolor sit amet, consectetur adipiscing elit."),
-        VerseData(number: 2, text: "Ayat kedua dari pasal $chapter dengan teks yang lebih panjang untuk testing scrolling dan layout."),
-        VerseData(number: 3, text: "Ayat ketiga dari pasal $chapter untuk demonstrasi navigasi antar pasal dengan gesture."),
-        VerseData(number: 4, text: "Ayat keempat menunjukkan bagaimana verse numbers ditampilkan sebagai superscript."),
-        VerseData(number: 5, text: "Ayat kelima dengan teks yang cukup panjang untuk menguji line spacing dan typography sesuai dengan guidelines design."),
+        VerseData(number: 1, text: "Ini adalah Kejadian pasal $chapter, ayat 1. Lorem ipsum dolor sit amet."),
+        VerseData(number: 2, text: "Ayat kedua dari pasal $chapter dengan teks yang lebih panjang untuk testing."),
+        VerseData(number: 3, text: "Ayat ketiga dari pasal $chapter untuk demonstrasi navigasi."),
       ];
     }
   }

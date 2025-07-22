@@ -26,7 +26,7 @@ class TopBarWidget extends StatelessWidget {
       child: Row(
         children: [
           const SizedBox(width: 16),
-          
+
           // Version selector text button
           TextButton(
             onPressed: () => _showVersionSelector(context),
@@ -38,9 +38,9 @@ class TopBarWidget extends StatelessWidget {
               ),
             ),
           ),
-          
+
           const Spacer(),
-          
+
           // Current reference label
           Text(
             '${state.currentBook.nameLocal} ${state.currentChapter}',
@@ -49,22 +49,22 @@ class TopBarWidget extends StatelessWidget {
               fontWeight: FontWeight.w500,
             ),
           ),
-          
+
           const Spacer(),
-          
+
           // Play Audio button (if audio available) - Phase 2
           // For now, we'll show it but disable it
           IconButton(
             onPressed: null, // TODO: Implement audio functionality
             icon: const Icon(Icons.play_arrow),
           ),
-          
+
           // Display Settings icon
           IconButton(
             onPressed: () => _showDisplaySettings(context),
             icon: const Icon(Icons.settings),
           ),
-          
+
           const SizedBox(width: 16),
         ],
       ),
@@ -139,7 +139,7 @@ class TopBarWidget extends StatelessWidget {
               ],
             ),
             const SizedBox(height: 16),
-            
+
             // Font Size
             ListTile(
               leading: const Icon(Icons.text_fields),
@@ -149,7 +149,7 @@ class TopBarWidget extends StatelessWidget {
                 // TODO: Implement font size adjustment
               },
             ),
-            
+
             // Line Spacing
             ListTile(
               leading: const Icon(Icons.format_line_spacing),
@@ -159,7 +159,7 @@ class TopBarWidget extends StatelessWidget {
                 // TODO: Implement line spacing adjustment
               },
             ),
-            
+
             // Theme
             ListTile(
               leading: const Icon(Icons.palette),
@@ -169,7 +169,7 @@ class TopBarWidget extends StatelessWidget {
                 // TODO: Implement theme selection
               },
             ),
-            
+
             const SizedBox(height: 16),
           ],
         ),

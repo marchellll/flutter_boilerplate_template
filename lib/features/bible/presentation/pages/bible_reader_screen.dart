@@ -19,16 +19,16 @@ class BibleReaderScreen extends StatefulWidget {
 class _BibleReaderScreenState extends State<BibleReaderScreen> {
   final ScrollController _scrollController = ScrollController();
   bool _isTopBarVisible = true;
-  
+
   @override
   void initState() {
     super.initState();
     context.read<BibleReaderBloc>().add(const LoadInitialData());
-    
+
     _scrollController.addListener(() {
       final isAtTop = _scrollController.offset <= 100;
       final isScrollingUp = _scrollController.position.userScrollDirection == ScrollDirection.forward;
-      
+
       if (isAtTop || isScrollingUp) {
         if (!_isTopBarVisible) {
           setState(() {
@@ -62,7 +62,7 @@ class _BibleReaderScreenState extends State<BibleReaderScreen> {
                 child: CircularProgressIndicator(),
               );
             }
-            
+
             if (state is BibleReaderError) {
               return Center(
                 child: Column(
@@ -89,7 +89,7 @@ class _BibleReaderScreenState extends State<BibleReaderScreen> {
                 ),
               );
             }
-            
+
             if (state is BibleReaderLoaded) {
               return Stack(
                 children: [
@@ -104,7 +104,7 @@ class _BibleReaderScreenState extends State<BibleReaderScreen> {
                       state: state,
                     ),
                   ),
-                  
+
                   // Top Bar (auto-hide)
                   AnimatedPositioned(
                     duration: const Duration(milliseconds: 300),
@@ -113,7 +113,7 @@ class _BibleReaderScreenState extends State<BibleReaderScreen> {
                     right: 0,
                     child: TopBarWidget(state: state),
                   ),
-                  
+
                   // Menu Bar (auto-hide)
                   AnimatedPositioned(
                     duration: const Duration(milliseconds: 300),
@@ -122,7 +122,7 @@ class _BibleReaderScreenState extends State<BibleReaderScreen> {
                     right: 0,
                     child: MenuBarWidget(isVisible: _isTopBarVisible),
                   ),
-                  
+
                   // Floating Verse Pill FAB
                   Positioned(
                     bottom: _isTopBarVisible ? 90 : 20,
@@ -135,7 +135,7 @@ class _BibleReaderScreenState extends State<BibleReaderScreen> {
                 ],
               );
             }
-            
+
             return const Center(
               child: Text('Initializing...'),
             );

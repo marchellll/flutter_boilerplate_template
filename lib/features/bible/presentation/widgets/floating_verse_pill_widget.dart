@@ -107,7 +107,7 @@ class _NavigationModalState extends State<_NavigationModal>
   @override
   Widget build(BuildContext context) {
     final screenHeight = MediaQuery.of(context).size.height;
-    
+
     return SizedBox(
       height: screenHeight * 0.7,
       child: Column(
@@ -129,7 +129,7 @@ class _NavigationModalState extends State<_NavigationModal>
               ],
             ),
           ),
-          
+
           // Tab bar
           TabBar(
             controller: _tabController,
@@ -138,7 +138,7 @@ class _NavigationModalState extends State<_NavigationModal>
               Tab(text: 'Grid'),
             ],
           ),
-          
+
           // Tab content
           Expanded(
             child: TabBarView(
@@ -214,9 +214,9 @@ class _DirectDialerTabState extends State<_DirectDialerTab> {
               ),
             ],
           ),
-          
+
           const SizedBox(height: 16),
-          
+
           // Numeric keypad (simplified for now)
           Expanded(
             child: GridView.count(
@@ -229,9 +229,9 @@ class _DirectDialerTabState extends State<_DirectDialerTab> {
               ],
             ),
           ),
-          
+
           const SizedBox(height: 16),
-          
+
           // Go button
           SizedBox(
             width: double.infinity,
