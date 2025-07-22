@@ -278,15 +278,15 @@ class _SimpleBibleReaderScreenState extends State<SimpleBibleReaderScreen> {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Icon(
-            icon, 
-            size: 24, 
+            icon,
+            size: 24,
             color: isActive ? Colors.white : Colors.grey[600]
           ),
           const SizedBox(height: 4),
           Text(
             label,
             style: TextStyle(
-              fontSize: 12, 
+              fontSize: 12,
               color: isActive ? Colors.white : Colors.grey[600]
             ),
           ),
