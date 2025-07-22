@@ -1,4 +1,4 @@
-package xyz.marchell.flutter_boilerplate_template
+package xyz.marchell.another_bible
 
 import io.flutter.embedding.android.FlutterActivity
 

@@ -90,12 +90,12 @@ BEGIN
         BLOCK "040904e4"
         BEGIN
             VALUE "CompanyName", "xyz.marchell" "\0"
-            VALUE "FileDescription", "flutter_boilerplate_template" "\0"
+            VALUE "FileDescription", "another_bible" "\0"
             VALUE "FileVersion", VERSION_AS_STRING "\0"
-            VALUE "InternalName", "flutter_boilerplate_template" "\0"
+            VALUE "InternalName", "another_bible" "\0"
             VALUE "LegalCopyright", "Copyright (C) 2025 xyz.marchell. All rights reserved." "\0"
-            VALUE "OriginalFilename", "flutter_boilerplate_template.exe" "\0"
-            VALUE "ProductName", "flutter_boilerplate_template" "\0"
+            VALUE "OriginalFilename", "another_bible.exe" "\0"
+            VALUE "ProductName", "another_bible" "\0"
             VALUE "ProductVersion", VERSION_AS_STRING "\0"
         END
     END

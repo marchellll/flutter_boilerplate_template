@@ -1,4 +1,4 @@
-# flutter_boilerplate_template
+# another_bible
 
 A new Flutter project.
 
@@ -76,7 +76,7 @@ lib/
 1. **Clone the repository**
    ```bash
    git clone <your-repo-url>
-   cd flutter_boilerplate_template
+   cd another_bible
    ```
 
 2. **Install dependencies**
@@ -131,7 +131,7 @@ lib/
 ### Customization
 
 #### Package Name
-The template uses `xyz.marchell.flutter_boilerplate_template`. To change:
+The template uses `xyz.marchell.another_bible`. To change:
 
 1. Update `pubspec.yaml`
 2. Update Android `build.gradle` files
