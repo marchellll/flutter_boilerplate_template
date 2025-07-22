@@ -7,15 +7,16 @@ Goal: Rebuild this screen (image reference) with our modern, gesture-first patte
 ## 1. Layout Structure
 SafeArea
 └─ Stack
-├─ ScrollView (verses)
+├─ ScrollView (Verses)
 │   └─ Column
-│       ├─ BookTitle (Genesis)        // H1
-│       ├─ ChapterTitle (Chapter 1)   // H2
+│       ├─ ChapterTitle
+│       │  ├─ (Genesis 1)  // H1, the chapter use accent color
+        │  ├─ PlayAudioButton (right top)
+│       │  └─ DisplaySettingsIcon (right top)
 │       └─ VerseList (1..N)
 │           ├─ VerseRow
 │           │   ├─ VerseNumber (superscript, muted)
 │           │   └─ VerseText (body)
-├─ TopBar (auto-hide)
 ├─ MenuBar (auto-hide)
 └─ FloatingVersePill FAB (bottom-right)
 
@@ -23,6 +24,7 @@ SafeArea
 - Base spacing: 8pt grid.
 - BookTitle: 24px / 32 line-height / SemiBold.
 - ChapterTitle: 18px / 26 lh / Medium, muted.
+- ChapterTitleAccent: 18px / 26 lh / Medium, accent color (red first).
 - VerseNumber: 12px / 16 lh / Medium, `#9AA0A6` (light).
 - VerseText: 18px / 28 lh / Regular.
 - Page horizontal padding: 20px.
@@ -30,27 +32,18 @@ SafeArea
 
 ---
 
-## 2. Top Bar (Auto-hide)
+## 2. Verses
 
-**Visible on:**
-- User at the top of the screen
-- Scroll up a little
-- Tap status bar
-
-**Contents (left→right):**
-- Version selector text button: `ESV` (our default: `TSI/KJV`)
-- Current reference label: `Genesis 1` (book + chapter)
-- Play Audio button (if audio available)
-- Display Settings icon (font size, line spacing, color theme)
+- Play Audio button and Display Settings icon hidden when not at the top of the chapter.
 
 **Behavior:**
 - Slide/fade out on scroll down
-- Slide in on scroll up or status-bar tap
 - Play Audio button toggles audio playback (if available) (phase 2)'
 - Display Settings opens a settings modal for font size, line spacing, and theme selection
 
-
----
+- **Verse Row**: Each verse is a row with:
+  - Superscript verse number (muted color)
+  - Verse text (body font)
 
 ## 3. MenuBar (Auto-hide)
 
