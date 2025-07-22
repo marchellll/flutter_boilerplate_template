@@ -317,10 +317,7 @@ class _SimpleBibleReaderScreenState extends State<SimpleBibleReaderScreen> {
             // Version button
             GestureDetector(
               onTap: () {
-                // TODO: Open version picker modal
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('Version picker coming soon!')),
-                );
+                _showVersionPicker();
               },
               child: Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
@@ -345,10 +342,7 @@ class _SimpleBibleReaderScreenState extends State<SimpleBibleReaderScreen> {
             // Chapter reference button
             GestureDetector(
               onTap: () {
-                // TODO: Open navigation modal
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('Navigation modal coming soon!')),
-                );
+                _showNavigationModal();
               },
               child: Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
@@ -426,6 +420,755 @@ class _SimpleBibleReaderScreenState extends State<SimpleBibleReaderScreen> {
           ],
         ),
       ),
+    );
+  }
+
+  void _showNavigationModal() {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) => DraggableScrollableSheet(
+        initialChildSize: 0.7,
+        minChildSize: 0.5,
+        maxChildSize: 0.9,
+        builder: (context, scrollController) => Container(
+          decoration: BoxDecoration(
+            color: Theme.of(context).scaffoldBackgroundColor,
+            borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
+          ),
+          child: Column(
+            children: [
+              // Handle bar
+              Container(
+                margin: const EdgeInsets.symmetric(vertical: 8),
+                width: 40,
+                height: 4,
+                decoration: BoxDecoration(
+                  color: Colors.grey[300],
+                  borderRadius: BorderRadius.circular(2),
+                ),
+              ),
+              // Header
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    const Text(
+                      'Navigate to',
+                      style: TextStyle(fontSize: 20, fontWeight: FontWeight.w600),
+                    ),
+                    IconButton(
+                      onPressed: () => Navigator.pop(context),
+                      icon: const Icon(Icons.close),
+                    ),
+                  ],
+                ),
+              ),
+              // Tab navigation
+              Expanded(
+                child: DefaultTabController(
+                  length: 3,
+                  child: Column(
+                    children: [
+                      TabBar(
+                        labelColor: Theme.of(context).primaryColor,
+                        unselectedLabelColor: Colors.grey[600],
+                        indicatorColor: Theme.of(context).primaryColor,
+                        tabs: const [
+                          Tab(text: 'Direct'),
+                          Tab(text: 'Dialer'),
+                          Tab(text: 'Grid'),
+                        ],
+                      ),
+                      Expanded(
+                        child: TabBarView(
+                          children: [
+                            _buildDirectNavigationTab(),
+                            _buildDialerNavigationTab(),
+                            _buildGridNavigationTab(scrollController),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildDirectNavigationTab() {
+    final TextEditingController controller = TextEditingController();
+    
+    return Padding(
+      padding: const EdgeInsets.all(20),
+      child: Column(
+        children: [
+          const Text(
+            'Enter reference (e.g., "Mat 6:9" or "Genesis 1:1")',
+            style: TextStyle(fontSize: 16, color: Colors.grey),
+          ),
+          const SizedBox(height: 20),
+          TextField(
+            controller: controller,
+            decoration: InputDecoration(
+              hintText: 'Mat 6:9',
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
+              prefixIcon: const Icon(Icons.search),
+            ),
+            textInputAction: TextInputAction.go,
+            onSubmitted: (value) {
+              _navigateToReference(value);
+              Navigator.pop(context);
+            },
+          ),
+          const SizedBox(height: 20),
+          SizedBox(
+            width: double.infinity,
+            child: ElevatedButton(
+              onPressed: () {
+                _navigateToReference(controller.text);
+                Navigator.pop(context);
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Theme.of(context).primaryColor,
+                foregroundColor: Colors.white,
+                padding: const EdgeInsets.symmetric(vertical: 16),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+              ),
+              child: const Text('Go', style: TextStyle(fontSize: 16)),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildDialerNavigationTab() {
+    return Padding(
+      padding: const EdgeInsets.all(20),
+      child: Column(
+        children: [
+          const Text(
+            'Select book, chapter, and verse',
+            style: TextStyle(fontSize: 16, color: Colors.grey),
+          ),
+          const SizedBox(height: 20),
+          Expanded(
+            child: Row(
+              children: [
+                // Book picker
+                Expanded(
+                  flex: 2,
+                  child: Column(
+                    children: [
+                      const Text('Book', style: TextStyle(fontWeight: FontWeight.w600)),
+                      const SizedBox(height: 8),
+                      Expanded(
+                        child: Container(
+                          decoration: BoxDecoration(
+                            border: Border.all(color: Colors.grey[300]!),
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: ListView.builder(
+                            itemCount: _getBookList().length,
+                            itemBuilder: (context, index) {
+                              final book = _getBookList()[index];
+                              return ListTile(
+                                title: Text(book, style: const TextStyle(fontSize: 14)),
+                                onTap: () {
+                                  // Handle book selection
+                                },
+                              );
+                            },
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(width: 8),
+                // Chapter picker
+                Expanded(
+                  child: Column(
+                    children: [
+                      const Text('Chapter', style: TextStyle(fontWeight: FontWeight.w600)),
+                      const SizedBox(height: 8),
+                      Expanded(
+                        child: Container(
+                          decoration: BoxDecoration(
+                            border: Border.all(color: Colors.grey[300]!),
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: ListView.builder(
+                            itemCount: 50, // Example: Genesis has 50 chapters
+                            itemBuilder: (context, index) {
+                              return ListTile(
+                                title: Text('${index + 1}', style: const TextStyle(fontSize: 14)),
+                                onTap: () {
+                                  // Handle chapter selection
+                                },
+                              );
+                            },
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(width: 8),
+                // Verse picker
+                Expanded(
+                  child: Column(
+                    children: [
+                      const Text('Verse', style: TextStyle(fontWeight: FontWeight.w600)),
+                      const SizedBox(height: 8),
+                      Expanded(
+                        child: Container(
+                          decoration: BoxDecoration(
+                            border: Border.all(color: Colors.grey[300]!),
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: ListView.builder(
+                            itemCount: 31, // Example: Genesis 1 has 31 verses
+                            itemBuilder: (context, index) {
+                              return ListTile(
+                                title: Text('${index + 1}', style: const TextStyle(fontSize: 14)),
+                                onTap: () {
+                                  // Handle verse selection
+                                },
+                              );
+                            },
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 20),
+          SizedBox(
+            width: double.infinity,
+            child: ElevatedButton(
+              onPressed: () {
+                // Navigate to selected reference
+                Navigator.pop(context);
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Theme.of(context).primaryColor,
+                foregroundColor: Colors.white,
+                padding: const EdgeInsets.symmetric(vertical: 16),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+              ),
+              child: const Text('Go to Selected', style: TextStyle(fontSize: 16)),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildGridNavigationTab(ScrollController scrollController) {
+    return Padding(
+      padding: const EdgeInsets.all(20),
+      child: Column(
+        children: [
+          const Text(
+            'Select a chapter',
+            style: TextStyle(fontSize: 16, color: Colors.grey),
+          ),
+          const SizedBox(height: 20),
+          Expanded(
+            child: GridView.builder(
+              controller: scrollController,
+              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 6,
+                crossAxisSpacing: 8,
+                mainAxisSpacing: 8,
+                childAspectRatio: 1,
+              ),
+              itemCount: 50, // Example: Genesis has 50 chapters
+              itemBuilder: (context, index) {
+                final chapter = index + 1;
+                return InkWell(
+                  onTap: () {
+                    // Navigate to chapter
+                    context.read<SimpleBibleBloc>().add(NavigateToChapter(chapter));
+                    Navigator.pop(context);
+                  },
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: chapter == 1 // Current chapter (example)
+                          ? Theme.of(context).primaryColor
+                          : Colors.grey[100],
+                      borderRadius: BorderRadius.circular(8),
+                      border: Border.all(
+                        color: Colors.grey[300]!,
+                        width: 1,
+                      ),
+                    ),
+                    child: Center(
+                      child: Text(
+                        '$chapter',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                          color: chapter == 1 ? Colors.white : Colors.black,
+                        ),
+                      ),
+                    ),
+                  ),
+                );
+              },
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  List<String> _getBookList() {
+    return [
+      'Kejadian', 'Keluaran', 'Imamat', 'Bilangan', 'Ulangan',
+      'Yosua', 'Hakim-hakim', 'Rut', '1 Samuel', '2 Samuel',
+      // Add more books as needed
+    ];
+  }
+
+  void _showVersionPicker() {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) => DraggableScrollableSheet(
+        initialChildSize: 0.7,
+        minChildSize: 0.5,
+        maxChildSize: 0.9,
+        builder: (context, scrollController) => Container(
+          decoration: BoxDecoration(
+            color: Theme.of(context).scaffoldBackgroundColor,
+            borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
+          ),
+          child: Column(
+            children: [
+              // Handle bar
+              Container(
+                margin: const EdgeInsets.symmetric(vertical: 8),
+                width: 40,
+                height: 4,
+                decoration: BoxDecoration(
+                  color: Colors.grey[300],
+                  borderRadius: BorderRadius.circular(2),
+                ),
+              ),
+              // Header
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    const Text(
+                      'Select Bible Version',
+                      style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
+                    ),
+                    IconButton(
+                      onPressed: () => Navigator.pop(context),
+                      icon: const Icon(Icons.close),
+                    ),
+                  ],
+                ),
+              ),
+              // Scrollable version list
+              Expanded(
+                child: SingleChildScrollView(
+                  controller: scrollController,
+                  padding: const EdgeInsets.symmetric(horizontal: 20),
+                  child: Column(
+                    children: [
+                      // Downloaded/Available versions section
+                      const Align(
+                        alignment: Alignment.centerLeft,
+                        child: Text(
+                          'Available',
+                          style: TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w600,
+                            color: Colors.grey,
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      _buildVersionOption('TSI', 'Terjemahan Sederhana Indonesia', true),
+                      _buildVersionOption('TB', 'Terjemahan Baru', false),
+                      _buildVersionOption('KJV', 'King James Version', false),
+                      _buildVersionOption('NIV', 'New International Version', false),
+                      _buildVersionOption('ESV', 'English Standard Version', false),
+                      _buildVersionOption('NASB', 'New American Standard Bible', false),
+                      _buildVersionOption('NLT', 'New Living Translation', false),
+                      _buildVersionOption('MSG', 'The Message', false),
+                      
+                      const SizedBox(height: 24),
+                      
+                      // More versions section
+                      _buildMoreVersionsOption(),
+                      
+                      const SizedBox(height: 20),
+                    ],
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildMoreVersionsOption() {
+    return Column(
+      children: [
+        // Horizontal separator line
+        Container(
+          height: 0.5,
+          width: double.infinity,
+          color: Colors.grey[300],
+          margin: const EdgeInsets.symmetric(vertical: 16),
+        ),
+        InkWell(
+          onTap: () {
+            Navigator.pop(context);
+            _showImportVersionModal();
+          },
+          borderRadius: BorderRadius.circular(12),
+          child: Container(
+            width: double.infinity,
+            padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 16),
+            child: Row(
+              children: [
+                Container(
+                  width: 40,
+                  height: 40,
+                  decoration: BoxDecoration(
+                    color: Colors.blue[100],
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Icon(
+                    Icons.download,
+                    color: Colors.blue[600],
+                    size: 20,
+                  ),
+                ),
+                const SizedBox(width: 16),
+                const Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'More versions',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                      Text(
+                        'Download or import Bible versions',
+                        style: TextStyle(fontSize: 14, color: Colors.grey),
+                      ),
+                    ],
+                  ),
+                ),
+                const Icon(Icons.chevron_right, color: Colors.grey),
+              ],
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  void _showImportVersionModal() {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) => DraggableScrollableSheet(
+        initialChildSize: 0.8,
+        minChildSize: 0.6,
+        maxChildSize: 0.9,
+        builder: (context, scrollController) => Container(
+          decoration: BoxDecoration(
+            color: Theme.of(context).scaffoldBackgroundColor,
+            borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
+          ),
+          child: Column(
+            children: [
+              // Handle bar
+              Container(
+                margin: const EdgeInsets.symmetric(vertical: 8),
+                width: 40,
+                height: 4,
+                decoration: BoxDecoration(
+                  color: Colors.grey[300],
+                  borderRadius: BorderRadius.circular(2),
+                ),
+              ),
+              // Header
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    const Text(
+                      'More Versions',
+                      style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
+                    ),
+                    IconButton(
+                      onPressed: () => Navigator.pop(context),
+                      icon: const Icon(Icons.close),
+                    ),
+                  ],
+                ),
+              ),
+              // Content
+              Expanded(
+                child: SingleChildScrollView(
+                  controller: scrollController,
+                  padding: const EdgeInsets.symmetric(horizontal: 20),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      // Import from file section
+                      _buildImportSection(),
+                      
+                      const SizedBox(height: 24),
+                      
+                      // Available downloads section
+                      const Text(
+                        'Available Downloads',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                      const SizedBox(height: 12),
+                      
+                      _buildDownloadableVersion('AMP', 'Amplified Bible', '2.1 MB'),
+                      _buildDownloadableVersion('NKJV', 'New King James Version', '1.8 MB'),
+                      _buildDownloadableVersion('CEV', 'Contemporary English Version', '1.7 MB'),
+                      _buildDownloadableVersion('GNT', 'Good News Translation', '1.9 MB'),
+                      _buildDownloadableVersion('HCSB', 'Holman Christian Standard Bible', '2.0 MB'),
+                      _buildDownloadableVersion('ISV', 'International Standard Version', '2.2 MB'),
+                      _buildDownloadableVersion('NET', 'New English Translation', '2.3 MB'),
+                      _buildDownloadableVersion('RSV', 'Revised Standard Version', '1.9 MB'),
+                      
+                      const SizedBox(height: 20),
+                    ],
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildImportSection() {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.grey[50],
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: Colors.grey[200]!),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text(
+            'Import from File',
+            style: TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+          const SizedBox(height: 8),
+          const Text(
+            'Import Bible files in formats: USFM, USX, OSIS, YES, PBD',
+            style: TextStyle(fontSize: 14, color: Colors.grey),
+          ),
+          const SizedBox(height: 16),
+          SizedBox(
+            width: double.infinity,
+            child: ElevatedButton.icon(
+              onPressed: () {
+                Navigator.pop(context);
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text('File picker coming soon!')),
+                );
+              },
+              icon: const Icon(Icons.file_upload),
+              label: const Text('Choose File'),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Theme.of(context).primaryColor,
+                foregroundColor: Colors.white,
+                padding: const EdgeInsets.symmetric(vertical: 12),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8),
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildDownloadableVersion(String code, String name, String size) {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 8),
+      child: InkWell(
+        onTap: () {
+          Navigator.pop(context);
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Downloading $code...')),
+          );
+        },
+        borderRadius: BorderRadius.circular(8),
+        child: Container(
+          width: double.infinity,
+          padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 12),
+          child: Row(
+            children: [
+              Container(
+                width: 40,
+                height: 40,
+                decoration: BoxDecoration(
+                  color: Colors.green[100],
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Icon(
+                  Icons.download,
+                  color: Colors.green[600],
+                  size: 20,
+                ),
+              ),
+              const SizedBox(width: 16),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      code,
+                      style: const TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                    Text(
+                      name,
+                      style: const TextStyle(fontSize: 14, color: Colors.grey),
+                    ),
+                  ],
+                ),
+              ),
+              Text(
+                size,
+                style: const TextStyle(fontSize: 12, color: Colors.grey),
+              ),
+              const SizedBox(width: 8),
+              const Icon(Icons.download, color: Colors.grey, size: 20),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildVersionOption(String code, String name, bool isSelected) {
+    return InkWell(
+      onTap: () {
+        // Handle version selection
+        Navigator.pop(context);
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Selected $code version')),
+        );
+      },
+      child: Container(
+        width: double.infinity,
+        padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 12),
+        decoration: BoxDecoration(
+          color: isSelected ? Colors.blue.withValues(alpha: 0.1) : null,
+          borderRadius: BorderRadius.circular(8),
+        ),
+        child: Row(
+          children: [
+            Container(
+              width: 40,
+              height: 40,
+              decoration: BoxDecoration(
+                color: isSelected ? Colors.blue : Colors.grey[300],
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: Center(
+                child: Text(
+                  code,
+                  style: TextStyle(
+                    color: isSelected ? Colors.white : Colors.grey[600],
+                    fontWeight: FontWeight.bold,
+                    fontSize: 12,
+                  ),
+                ),
+              ),
+            ),
+            const SizedBox(width: 16),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    code,
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w600,
+                      color: isSelected ? Colors.blue : null,
+                    ),
+                  ),
+                  Text(
+                    name,
+                    style: const TextStyle(fontSize: 14, color: Colors.grey),
+                  ),
+                ],
+              ),
+            ),
+            if (isSelected)
+              const Icon(
+                Icons.check_circle,
+                color: Colors.blue,
+              ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void _navigateToReference(String reference) {
+    // Parse reference like "Mat 6:9" or "Genesis 1:1"
+    // For now, just show a snackbar
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('Navigating to: $reference')),
     );
   }
 

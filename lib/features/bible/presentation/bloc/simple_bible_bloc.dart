@@ -22,6 +22,14 @@ class NavigateToPreviousChapter extends SimpleBibleEvent {
   const NavigateToPreviousChapter();
 }
 
+class NavigateToChapter extends SimpleBibleEvent {
+  final int chapter;
+  const NavigateToChapter(this.chapter);
+
+  @override
+  List<Object?> get props => [chapter];
+}
+
 class ToggleBars extends SimpleBibleEvent {
   const ToggleBars();
 }
@@ -41,6 +49,7 @@ class SimpleBibleBloc extends Bloc<SimpleBibleEvent, SimpleBibleState> {
     on<LoadInitialData>(_onLoadInitialData);
     on<NavigateToNextChapter>(_onNavigateToNextChapter);
     on<NavigateToPreviousChapter>(_onNavigateToPreviousChapter);
+    on<NavigateToChapter>(_onNavigateToChapter);
     on<ToggleBars>(_onToggleBars);
     on<UpdateScrollPosition>(_onUpdateScrollPosition);
   }
@@ -82,6 +91,15 @@ class SimpleBibleBloc extends Bloc<SimpleBibleEvent, SimpleBibleState> {
       emit(state.copyWith(
         currentChapter: state.currentChapter - 1,
         verses: _getDummyVersesForChapter(state.currentChapter - 1),
+      ));
+    }
+  }
+
+  void _onNavigateToChapter(NavigateToChapter event, Emitter<SimpleBibleState> emit) {
+    if (event.chapter >= 1 && event.chapter <= 50) { // Genesis has 50 chapters
+      emit(state.copyWith(
+        currentChapter: event.chapter,
+        verses: _getDummyVersesForChapter(event.chapter),
       ));
     }
   }
