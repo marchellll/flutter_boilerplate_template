@@ -79,6 +79,17 @@ use solid background color
 - Allows searching by verse, keyword, topic
 - AI powered search suggestions
 
+
+#### More
+- Icon: `more`
+- Opens additional options
+- it shows a new screen with the following options:
+  - theme (light/dark/system)
+  - Settings
+  - Feedback
+  - Help
+  - About
+
 ---
 
 ## 4. Floating Verse Pill FAB

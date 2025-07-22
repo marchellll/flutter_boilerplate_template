@@ -89,32 +89,80 @@ class _SimpleBibleReaderScreenState extends State<SimpleBibleReaderScreen> {
             delegate: SliverChildBuilderDelegate(
               (context, index) {
                 if (index == 0) {
-                  // Book title + Chapter number in one line
+                  // Book title + Chapter number with audio and settings buttons
                   return Padding(
                     padding: const EdgeInsets.only(top: 16, bottom: 24),
-                    child: RichText(
-                      text: TextSpan(
-                        children: [
-                          TextSpan(
-                            text: state.currentBookLocal,
-                            style: TextStyle(
-                              fontSize: 28,
-                              height: 36 / 28,
-                              fontWeight: FontWeight.w600,
-                              color: Theme.of(context).textTheme.bodyLarge?.color, // Use theme color
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        // Title row with action buttons
+                        Row(
+                          children: [
+                            // Book title + Chapter number
+                            Expanded(
+                              child: RichText(
+                                text: TextSpan(
+                                  children: [
+                                    TextSpan(
+                                      text: state.currentBookLocal,
+                                      style: TextStyle(
+                                        fontSize: 28,
+                                        height: 36 / 28,
+                                        fontWeight: FontWeight.w600,
+                                        color: Theme.of(context).textTheme.bodyLarge?.color,
+                                      ),
+                                    ),
+                                    TextSpan(
+                                      text: ' ${state.currentChapter}',
+                                      style: TextStyle(
+                                        fontSize: 28,
+                                        height: 36 / 28,
+                                        fontWeight: FontWeight.w600,
+                                        color: Colors.red, // Red accent color for chapter number
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
                             ),
-                          ),
-                          TextSpan(
-                            text: ' ${state.currentChapter}',
-                            style: TextStyle(
-                              fontSize: 28,
-                              height: 36 / 28,
-                              fontWeight: FontWeight.w600,
-                              color: Colors.red, // Red accent color for chapter number
+                            // Action buttons (right aligned)
+                            Row(
+                              children: [
+                                // Play Audio Button (hidden when not at top)
+                                AnimatedOpacity(
+                                  duration: const Duration(milliseconds: 300),
+                                  opacity: state.isTopBarVisible ? 1.0 : 0.0,
+                                  child: IconButton(
+                                    onPressed: () {
+                                      // TODO: Implement audio playback
+                                      ScaffoldMessenger.of(context).showSnackBar(
+                                        const SnackBar(content: Text('Audio playback coming soon!')),
+                                      );
+                                    },
+                                    icon: const Icon(Icons.play_circle_outline),
+                                    iconSize: 28,
+                                  ),
+                                ),
+                                // Display Settings Icon (hidden when not at top)
+                                AnimatedOpacity(
+                                  duration: const Duration(milliseconds: 300),
+                                  opacity: state.isTopBarVisible ? 1.0 : 0.0,
+                                  child: IconButton(
+                                    onPressed: () {
+                                      // TODO: Implement display settings modal
+                                      ScaffoldMessenger.of(context).showSnackBar(
+                                        const SnackBar(content: Text('Display settings coming soon!')),
+                                      );
+                                    },
+                                    icon: const Icon(Icons.text_fields),
+                                    iconSize: 28,
+                                  ),
+                                ),
+                              ],
                             ),
-                          ),
-                        ],
-                      ),
+                          ],
+                        ),
+                      ],
                     ),
                   );
                 } else {
@@ -202,7 +250,9 @@ class _SimpleBibleReaderScreenState extends State<SimpleBibleReaderScreen> {
           _buildMenuButton(Icons.home, 'Home', () {}),
           _buildMenuButton(Icons.book, 'Bible', () {}),
           _buildMenuButton(Icons.calendar_today, 'Plans', () {}),
-          _buildMenuButton(Icons.search, 'Search', () {}),
+          _buildMenuButton(Icons.more_horiz, 'More', () {
+            _showMoreModal();
+          }),
         ],
       ),
     );
@@ -317,6 +367,91 @@ class _SimpleBibleReaderScreenState extends State<SimpleBibleReaderScreen> {
             Icon(icon, size: 20),
             const SizedBox(height: 4),
             Text(label, style: const TextStyle(fontSize: 12)),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void _showMoreModal() {
+    showModalBottomSheet(
+      context: context,
+      builder: (context) => Container(
+        padding: const EdgeInsets.all(20),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                const Text(
+                  'More Options',
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
+                ),
+                IconButton(
+                  onPressed: () => Navigator.pop(context),
+                  icon: const Icon(Icons.close),
+                ),
+              ],
+            ),
+            const SizedBox(height: 16),
+            Column(
+              children: [
+                _buildMoreOption('Theme', Icons.palette, () {
+                  Navigator.pop(context);
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('Theme settings coming soon!')),
+                  );
+                }),
+                _buildMoreOption('Settings', Icons.settings, () {
+                  Navigator.pop(context);
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('Settings coming soon!')),
+                  );
+                }),
+                _buildMoreOption('Feedback', Icons.feedback, () {
+                  Navigator.pop(context);
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('Feedback coming soon!')),
+                  );
+                }),
+                _buildMoreOption('Help', Icons.help, () {
+                  Navigator.pop(context);
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('Help coming soon!')),
+                  );
+                }),
+                _buildMoreOption('About', Icons.info, () {
+                  Navigator.pop(context);
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('About coming soon!')),
+                  );
+                }),
+              ],
+            ),
+            const SizedBox(height: 20),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildMoreOption(String title, IconData icon, VoidCallback onTap) {
+    return InkWell(
+      onTap: onTap,
+      child: Container(
+        width: double.infinity,
+        padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 12),
+        child: Row(
+          children: [
+            Icon(icon, size: 24),
+            const SizedBox(width: 16),
+            Text(
+              title,
+              style: const TextStyle(fontSize: 16),
+            ),
+            const Spacer(),
+            const Icon(Icons.chevron_right, size: 20),
           ],
         ),
       ),
