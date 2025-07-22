@@ -63,7 +63,7 @@ class _SimpleBibleReaderScreenState extends State<SimpleBibleReaderScreen> {
                   // Menu Bar (Auto-hide) - No top bar as per guidelines
                   AnimatedPositioned(
                     duration: const Duration(milliseconds: 300),
-                    bottom: state.isMenuBarVisible ? 0 : -80,
+                    bottom: state.isMenuBarVisible ? 0 : -60,
                     left: 0,
                     right: 0,
                     child: _buildMenuBar(),
@@ -73,7 +73,7 @@ class _SimpleBibleReaderScreenState extends State<SimpleBibleReaderScreen> {
                   AnimatedPositioned(
                     duration: const Duration(milliseconds: 300),
                     curve: Curves.easeInOut,
-                    bottom: state.isMenuBarVisible ? 100 : 20,
+                    bottom: state.isMenuBarVisible ? 80 : 20,
                     left: 20,
                     right: 20,
                     child: Center(
@@ -247,41 +247,48 @@ class _SimpleBibleReaderScreenState extends State<SimpleBibleReaderScreen> {
 
   Widget _buildMenuBar() {
     return Container(
-      height: 80,
+      height: 60,
       decoration: BoxDecoration(
         color: Theme.of(context).scaffoldBackgroundColor, // 100% opacity as requested
         border: Border(
           top: BorderSide(
-            color: Colors.grey[300]!,
-            width: 1,
+            color: Colors.grey[600]!,
+            width: 0.5,
           ),
         ),
       ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
-          _buildMenuButton(Icons.home, 'Home', () {}),
-          _buildMenuButton(Icons.book, 'Bible', () {}),
-          _buildMenuButton(Icons.calendar_today, 'Plans', () {}),
+          _buildMenuButton(Icons.home, 'Home', () {}, false),
+          _buildMenuButton(Icons.book, 'Bible', () {}, true), // Active item
+          _buildMenuButton(Icons.calendar_today, 'Plans', () {}, false),
           _buildMenuButton(Icons.more_horiz, 'More', () {
             _showMoreModal();
-          }),
+          }, false),
         ],
       ),
     );
   }
 
-  Widget _buildMenuButton(IconData icon, String label, VoidCallback onTap) {
+  Widget _buildMenuButton(IconData icon, String label, VoidCallback onTap, bool isActive) {
     return InkWell(
       onTap: onTap,
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(icon, size: 24),
+          Icon(
+            icon, 
+            size: 24, 
+            color: isActive ? Colors.white : Colors.grey[600]
+          ),
           const SizedBox(height: 4),
           Text(
             label,
-            style: const TextStyle(fontSize: 12),
+            style: TextStyle(
+              fontSize: 12, 
+              color: isActive ? Colors.white : Colors.grey[600]
+            ),
           ),
         ],
       ),
