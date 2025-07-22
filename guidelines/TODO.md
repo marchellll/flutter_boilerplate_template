@@ -7,9 +7,9 @@
 - [x] Functional implementation works (navigation logic)
 - [ ] **UI LOOKS BAD**: Current design is shit and needs visual redesign
 - [ ] **TODO**: Redesign UI/UX for better visual appeal and usability
-- [x] Direct: single text input "Mat 6:9" - works but ugly
-- [x] Dialer: 3 wheel pickers - works but ugly
-- [x] Grid: grid of chapters, then verses - works but ugly
+- [ ] Direct: single text input "Mat 6:9" - not yet works
+- [ ] Dialer: 3 wheel pickers - not yet works
+- [ ] Grid: grid of chapters, then verses - not yet works
 - [x] Smooth slide/animate
 
 ## 6. Highlights & Notes ✅ UI DONE: Refactored bible_reader_screen.dart into modular widgets (80% code reduction), removed TODO boilerplate features, moved global components to core/widgets. App architecture now clean and focused on Bible reading.
@@ -94,7 +94,7 @@
 - [x] Clean architecture with feature-based structure
 - [x] Removed TODO boilerplate, focused on Bible app
 - [x] Bible reader UI with 8 modular widgets
-- [⚠️] Navigation modal structure (works functionally but UI looks bad)
+- [⚠️] Navigation modal structure (UI looks bad)
 - [x] Verse interaction UI (highlight, notes, share)
 - [x] Global app navigation (bottom bar + more modal)
 - [x] Gesture-based navigation (swipe chapters, auto-hide bars)
@@ -102,7 +102,7 @@
 
 **NEXT PRIORITIES:**
 1. **Data Layer** - Implement actual Bible database and BLoC logic
-2. **Navigation Modal UI REDESIGN** - Works functionally but looks bad, needs visual redesign
+2. **Navigation Modal UI REDESIGN** - but looks bad, needs visual reimplementation
 3. **Built-in Versions** - Add TSI & KJV Bible text data
 4. **Import Feature** - File parsing for USFM, USX, OSIS formats
 5. **Functional Implementation** - Make UI components actually work with data
