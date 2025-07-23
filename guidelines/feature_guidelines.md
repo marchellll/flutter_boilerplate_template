@@ -184,29 +184,31 @@ Data to pass: book, chapter, verse number, version id.
 #### DirectDialer
 
 Top to bottom:
-- Book selector (2 text input, left for book, right for chapter and verse)
-- Chapter and Verse selector (numeric keypad with backspace, colon, and Go button)
+- Search Input field. Can accept:
+  - Gen 1:1
+  - Mat 6:9
+  - Kidung 1:1
+- Column
+  - BookSelection: a list of books in the current version
+  - ChapterVerseInput (numeric keypad with backspace, colon, and Go button)
+    - ChapterInput: numeric input for chapter
+    - VerseInput: numeric input for verse
+    - Numpad
+      - 0-9 keys
+      - Backspace key
+      - Colon key (for chapter:verse)
+- Go button: navigates to the selected book/chapter/verse.
 
 
-Numeric keypad for verse entry. Quick jump to a specific verse. Can fuzzy match book names, chapter numbers, and verse numbers. Text input field with auto-complete suggestions. Text input also act as book selector.
+when the user use type in the search input field, it will filter the book selection. it also can auto fill the chapter and verse fields. if the user enters a valid book/chapter/verse, it will navigate to that verse when the user taps the Go button. if the user enters an invalid book/chapter/verse, nothing will happen, and the input field will remain focused, highlighting the invalid input, with inline error message. the input field should display a reference example, that is randomly choosen from the available books in the current bible version.
 
-If the user use the text input field, it will show a list of suggestions based on the input. If the user selects a suggestion, it will navigate to that verse.
-
-If the user enters a valid book/chapter/verse, it will navigate to that verse.
-
-If the user enters an invalid book/chapter/verse, nothing will happen, and the input field will remain focused.
-
-If the user select a book from the list, the user can use the dialer to select the chapter and verse.
-
-Typing a full reference like `Mat 6:9` will auto-fill the book, chapter, and verse fields, and automatically navigate to that verse.
+Typing a full reference like `Mat 6:9` will auto-fill the book, chapter, and verse fields, and pressing Go automatically navigate to that verse.
 
 Book and chapter titles should be in the local language (e.g., "Kejadian" for Genesis in Indonesian).
 
 
 #### Grid
-Visual grid of chapters/verses, no scroll. Show all chapters in a book, then verses in a chapter after book selected.
-
-In drag mode, hover for 2 seconds equals tapping it. Layering the whole screen. The screen if big (tablet/desktop) use sheet modal, otherwise full screen.
+Visual grid of book/chapters/verses, no scroll. Show all books in the current version, then after selecting a book, show chapters, then verses.
 
 
 #### Marker
