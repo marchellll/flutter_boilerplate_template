@@ -10,12 +10,14 @@ class _DialerNavigationTabState extends State<DialerNavigationTab> {
   final TextEditingController searchController = TextEditingController();
   final TextEditingController chapterController = TextEditingController(text: '1');
   final TextEditingController verseController = TextEditingController(text: '1');
+  final FocusNode searchFocusNode = FocusNode();
   final FocusNode chapterFocusNode = FocusNode();
   final FocusNode verseFocusNode = FocusNode();
 
   List<String> filteredBooks = [];
   String? selectedBook;
   bool hasError = false;
+  bool _skipNextSelection = false; // Flag to skip auto-selection
 
   @override
   void initState() {
@@ -26,10 +28,14 @@ class _DialerNavigationTabState extends State<DialerNavigationTab> {
     // Add listeners to select all text when focused
     chapterFocusNode.addListener(() {
       if (chapterFocusNode.hasFocus) {
-        chapterController.selection = TextSelection(
-          baseOffset: 0,
-          extentOffset: chapterController.text.length,
-        );
+        if (_skipNextSelection) {
+          _skipNextSelection = false; // Reset flag
+        } else {
+          chapterController.selection = TextSelection(
+            baseOffset: 0,
+            extentOffset: chapterController.text.length,
+          );
+        }
       } else {
         // Set default to 1 if empty on lost focus
         if (chapterController.text.isEmpty) {
@@ -51,6 +57,15 @@ class _DialerNavigationTabState extends State<DialerNavigationTab> {
         }
       }
     });
+
+    // Add listeners to update UI when values change
+    chapterController.addListener(() {
+      setState(() {}); // Trigger rebuild to update Go button text
+    });
+
+    verseController.addListener(() {
+      setState(() {}); // Trigger rebuild to update Go button text
+    });
   }
 
   @override
@@ -58,6 +73,7 @@ class _DialerNavigationTabState extends State<DialerNavigationTab> {
     searchController.dispose();
     chapterController.dispose();
     verseController.dispose();
+    searchFocusNode.dispose();
     chapterFocusNode.dispose();
     verseFocusNode.dispose();
     super.dispose();
@@ -178,6 +194,25 @@ class _DialerNavigationTabState extends State<DialerNavigationTab> {
   }
 
   void _handleNumpadPress(String value) {
+    // Check if search field has focus - if so, replace chapter field content and focus it
+    if (searchFocusNode.hasFocus) {
+      if (value == '⌫') {
+        // For backspace, clear chapter field and focus it
+        chapterController.text = '';
+        FocusScope.of(context).requestFocus(chapterFocusNode);
+      } else if (value == ':') {
+        // For colon, move to verse field
+        FocusScope.of(context).requestFocus(verseFocusNode);
+      } else {
+        // For numbers, replace chapter field content and focus it
+        chapterController.text = value;
+        _skipNextSelection = true; // Skip the auto-selection on focus
+        FocusScope.of(context).requestFocus(chapterFocusNode);
+        chapterController.selection = TextSelection.collapsed(offset: value.length);
+      }
+      return;
+    }
+
     if (value == ':') {
       // Move focus from chapter to verse
       if (chapterFocusNode.hasFocus) {
@@ -281,6 +316,7 @@ class _DialerNavigationTabState extends State<DialerNavigationTab> {
             ),
             child: TextField(
               controller: searchController,
+              focusNode: searchFocusNode,
               style: const TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.w500,
