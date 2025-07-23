@@ -2,15 +2,17 @@
 
 # TODO (Actionable Tasks)
 
-**RECENT PROGR## 5. NavModal (Direct / Dialer / Grid) ⚠️ NEEDS UI REDESIGN
+**RECENT PROGR## 5. NavModal (Direct / Dialer / Grid) ⚠️ PARTIALLY DONE
 - [x] UI structure with TabBar and 3 modes created
 - [x] Functional implementation works (navigation logic)
-- [ ] **UI LOOKS BAD**: Current design is shit and needs visual redesign
-- [ ] **TODO**: Redesign UI/UX for better visual appeal and usability
+- [x] **Dialer tab**: UI LOOKS GOOD - smart parsing, numpad input, book selection
+- [ ] **Grid tab**: UI LOOKS BAD - needs visual redesign  
+- [ ] **TODO**: Redesign Grid tab UI/UX for better visual appeal
 - [ ] Direct: single text input "Mat 6:9" - not yet works
-- [ ] Dialer: 3 wheel pickers - not yet works
-- [ ] Grid: grid of chapters, then verses - not yet works
+- [x] Dialer: 3-column layout with search, book picker, numpad - WORKS WELL
+- [ ] Grid: grid of chapters, then verses - LOOKS BAD
 - [x] Smooth slide/animate
+- [x] Refactored into modular widgets (navigation_modal.dart + dialer_navigation_tab.dart + grid_navigation_tab.dart)
 
 ## 6. Highlights & Notes ✅ UI DONE: Refactored bible_reader_screen.dart into modular widgets (80% code reduction), removed TODO boilerplate features, moved global components to core/widgets. App architecture now clean and focused on Bible reading.
 
@@ -102,7 +104,7 @@
 
 **NEXT PRIORITIES:**
 1. **Data Layer** - Implement actual Bible database and BLoC logic
-2. **Navigation Modal UI REDESIGN** - but looks bad, needs visual reimplementation
+2. **Grid Navigation UI REDESIGN** - Dialer tab looks good, but Grid tab needs visual reimplementation
 3. **Built-in Versions** - Add TSI & KJV Bible text data
 4. **Import Feature** - File parsing for USFM, USX, OSIS formats
 5. **Functional Implementation** - Make UI components actually work with data
