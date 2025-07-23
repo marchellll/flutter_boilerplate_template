@@ -45,8 +45,8 @@ class _NavigationModalContentState extends State<_NavigationModalContent>
           duration: const Duration(milliseconds: 300),
           curve: Curves.easeInOut,
           child: DraggableScrollableSheet(
-            initialChildSize: isGridTab ? 1.0 : 0.85,
-            minChildSize: isGridTab ? 1.0 : 0.8,
+            initialChildSize: isGridTab ? 1.0 : 0.75,
+            minChildSize: isGridTab ? 1.0 : 0.75,
             maxChildSize: isGridTab ? 1.0 : 0.9,
             builder: (context, scrollController) => Container(
               decoration: BoxDecoration(
@@ -408,7 +408,7 @@ class _DialerNavigationTabState extends State<_DialerNavigationTab> {
                 color: Colors.black87, // Better contrast
               ),
               decoration: InputDecoration(
-                hintText: 'Try: 1 Sam 3:16, Kejad 1:1, or 1s2',
+                hintText: 'Try: 1 Sam 3 16, Kejad 1:1, or 1s2',
                 hintStyle: TextStyle(
                   fontSize: 16,
                   color: Colors.grey[600], // Better contrast for hint
