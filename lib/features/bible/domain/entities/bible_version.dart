@@ -17,6 +17,28 @@ class BibleVersion extends Equatable {
     required this.isDefault,
   });
 
+  factory BibleVersion.fromMap(Map<String, dynamic> map) {
+    return BibleVersion(
+      id: map['id'] as String,
+      name: map['name'] as String,
+      fullName: map['full_name'] as String,
+      language: map['language'] as String,
+      description: map['description'] as String,
+      isDefault: (map['is_default'] as int) == 1,
+    );
+  }
+
+  Map<String, dynamic> toMap() {
+    return {
+      'id': id,
+      'name': name,
+      'full_name': fullName,
+      'language': language,
+      'description': description,
+      'is_default': isDefault ? 1 : 0,
+    };
+  }
+
   @override
   List<Object?> get props => [
         id,

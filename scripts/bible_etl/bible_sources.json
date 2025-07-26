@@ -1,0 +1,18 @@
+{
+  "kjv": {
+    "name": "King James Version",
+    "format": "usfx",
+    "url": "https://ebible.org/Scriptures/eng-kjv2006_usfx.zip",
+    "language": "en",
+    "abbreviation": "KJV",
+    "description": "The King James Version (1769) is a classic English translation known for its literary beauty and historical significance."
+  },
+  "tsi": {
+    "name": "Terjemahan Sederhana Indonesia",
+    "format": "usfx",
+    "url": "https://ebible.org/Scriptures/ind_usfx.zip",
+    "language": "id",
+    "abbreviation": "TSI",
+    "description": "Terjemahan Sederhana Indonesia - Simple Indonesian translation for easy understanding."
+  }
+}

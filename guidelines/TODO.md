@@ -1,12 +1,10 @@
-
-
 # TODO (Actionable Tasks)
 
-**RECENT PROGR## 5. NavModal (Direct / Dialer / Grid) ⚠️ PARTIALLY DONE
+**RECENT PROGRESS** ## 5. NavModal (Direct / Dialer / Grid) ⚠️ PARTIALLY DONE
 - [x] UI structure with TabBar and 3 modes created
 - [x] Functional implementation works (navigation logic)
 - [x] **Dialer tab**: UI LOOKS GOOD - smart parsing, numpad input, book selection
-- [ ] **Grid tab**: UI LOOKS BAD - needs visual redesign  
+- [ ] **Grid tab**: UI LOOKS BAD - needs visual redesign
 - [ ] **TODO**: Redesign Grid tab UI/UX for better visual appeal
 - [ ] Direct: single text input "Mat 6:9" - not yet works
 - [x] Dialer: 3-column layout with search, book picker, numpad - WORKS WELL
@@ -21,26 +19,38 @@
 - [x] Add packages: flutter_bloc, get_it, injectable, go_router, etc.
 - [x] Set up project structure with features/core architecture
 
-## 1. Data Layer
-- [ ] Schema: books, chapters, verses, notes, highlights, metadata
-- [ ] Implement DB service (CRUD + FTS for search)
-- [ ] Import pipeline: save parsed text to DB
+## 1. Data Layer ✅ ETL PIPELINE ENHANCED
+- [x] **ETL Pipeline**: Created `scripts/bible_etl/` with multi-source Bible data pipeline
+- [x] **Schema Enhancement**: Updated to support version-specific books with localized names
+- [x] **Entity Synchronization**: 
+  - [x] Updated Book entity: removed redundant `nameLocal`, added `code`, `versionId`, localized name fields
+  - [x] Created Footnote entity for Bible footnotes and cross-references
+  - [x] Enhanced Verse entity with footnotes reference
+  - [x] Removed redundant BookName entity (merged into Book)
+- [x] **Database Schema**: books, chapters, verses, footnotes, notes, highlights, metadata with FTS5 search
+- [x] **USFX Parser**: Enhanced with BCV attribute parsing, BookNames.xml support, footnote extraction
+- [x] **Multi-format Support**: USFM, USFX, USX, OSIS parsers implemented
+- [x] **Search Optimization**: FTS5 virtual tables for full-text search
+- [x] **Verification**: Enhanced verify.js with content quality checks, duplicate detection, verse validation
+- [x] **Idempotent Pipeline**: Safe to rerun, declarative source management
+- [⚠️] **ISSUE**: Current pipeline shows 0 verses extracted - USFX parser needs debugging
+- [ ] **TODO**: Debug USFX verse extraction (BCV attribute parsing not working correctly)
+- [ ] **TODO**: Implement BLoC/repository layer for database operations
+- [ ] **TODO**: Run successful ETL pipeline to generate actual bible.db with verses
 
-## 2. Built-in Versions
-- [ ] Convert TSI & KJV → SQLite/JSON
-- [ ] Bundle in assets & load on first run
-- [ ] Show in VersionSelector
+## 2. Built-in Versions ⚠️ PIPELINE READY
+- [x] **ETL Infrastructure**: Pipeline supports multiple Bible versions
+- [x] **Source Configuration**: `bible_sources.json` with KJV, WEB, ASV sources
+- [ ] **TODO**: Run pipeline to download and process TSI & KJV
+- [ ] **TODO**: Verify database deployment to `assets/bibles/`
+- [ ] **TODO**: Show in VersionSelector widget
 
 ## 3. Import Feature
-- [ ] UI: “Import Bible File”
-- [ ] detectFormat(filePath) → enum {USFM, USX, OSIS, YES_V1, YES_V2, PBD, UNKNOWN}
-- [ ] Parser funcs (throw on encrypted PBD/YES):
-  - parseUsfm()
-  - parseUsx()
-  - parseOsis()
-  - parseYesV1()
-  - parseYesV2()
-  - parsePbd()
+- [ ] UI: "Import Bible File"
+- [x] **Format Detection**: detectFormat() implemented in ETL parser
+- [x] **Multi-format Parsers**: USFM, USX, OSIS, text parsers ready
+- [ ] **TODO**: Create Flutter UI for file import
+- [ ] **TODO**: Integrate ETL parsers into Flutter app
 - [ ] Persist to DB; add to Version list
 
 ## 4. Reader (Home) ✅ MOSTLY DONE
@@ -101,15 +111,21 @@
 - [x] Global app navigation (bottom bar + more modal)
 - [x] Gesture-based navigation (swipe chapters, auto-hide bars)
 - [x] Version picker modal structure
+- [x] **🆕 ETL Pipeline**: Complete multi-source Bible data processing system
+- [x] **🆕 Database Schema**: Optimized SQLite with FTS5 search capabilities
+- [x] **🆕 Entity Generation**: Auto-generated Flutter domain entities
 
 **NEXT PRIORITIES:**
-1. **Data Layer** - Implement actual Bible database and BLoC logic
-2. **Grid Navigation UI REDESIGN** - Dialer tab looks good, but Grid tab needs visual reimplementation
-3. **Built-in Versions** - Add TSI & KJV Bible text data
-4. **Import Feature** - File parsing for USFM, USX, OSIS formats
-5. **Functional Implementation** - Make UI components actually work with data
+1. **Run ETL Pipeline** - Execute `npm run build` to generate bible.db with real data
+2. **BLoC Integration** - Implement repository pattern and state management for database
+3. **Grid Navigation UI REDESIGN** - Dialer tab looks good, but Grid tab needs visual reimplementation
+4. **Functional Implementation** - Connect UI components to actual Bible data
+5. **Import Feature UI** - Create Flutter interface for the ETL import capabilities
 
-**CURRENT STATE**: UI/UX framework complete, needs data layer integration
+**CURRENT STATE**:
+- UI/UX framework complete ✅
+- **Data pipeline infrastructure complete** ✅
+- **Needs**: Execute ETL pipeline + implement Flutter data layer
 
 ## Phase 2 (Defer)
 - Dynamic downloads (API)

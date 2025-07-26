@@ -1,0 +1,41 @@
+{
+  "name": "bible-etl",
+  "version": "1.0.0",
+  "description": "Multi-source Bible ETL pipeline for Flutter Bible app",
+  "main": "index.js",
+  "type": "commonjs",
+  "scripts": {
+    "build": "node index.js",
+    "download": "node index.js --download-only",
+    "parse": "node index.js --parse-only",
+    "deploy": "node index.js --deploy-only",
+    "verify": "node verify.js",
+    "verify-deployed": "node verify.js ../../assets/bibles/bible.db",
+    "clean": "rm -rf downloads bible.db",
+    "test": "npm run build && npm run verify"
+  },
+  "dependencies": {
+    "better-sqlite3": "^8.7.0",
+    "node-fetch": "^3.3.2",
+    "yauzl": "^2.10.0",
+    "cheerio": "^1.0.0-rc.12"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0"
+  },
+  "engines": {
+    "node": ">=16.0.0"
+  },
+  "keywords": [
+    "bible",
+    "etl",
+    "usfm",
+    "usfx",
+    "usx",
+    "osis",
+    "sqlite",
+    "flutter"
+  ],
+  "author": "Bible App Team",
+  "license": "MIT"
+}

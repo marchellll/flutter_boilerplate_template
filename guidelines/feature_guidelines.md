@@ -170,7 +170,6 @@ Data to pass: book, chapter, verse number, version id.
 - [ ] Performance: 60fps scroll on mid-tier Android.
 
 ---
-
 ## 11. Navigation Modal
 
 
