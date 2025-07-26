@@ -14,15 +14,15 @@ console.log('🧪 Testing for verse duplicates...');
 
 try {
   const result = parseUSFX('./downloads/kjv', sources.kjv);
-  
+
   console.log(`📚 Books parsed: ${result.books.size}`);
   console.log(`📄 Chapters parsed: ${result.chapters.size}`);
   console.log(`📝 Verses parsed: ${result.verses.length}`);
-  
+
   // Check for duplicates
   const verseKeys = new Map();
   const duplicates = [];
-  
+
   for (const verse of result.verses) {
     const key = `${verse.book_code}_${verse.chapter}_${verse.verse}_${verse.version_id}`;
     if (verseKeys.has(key)) {
@@ -35,9 +35,9 @@ try {
       verseKeys.set(key, verse);
     }
   }
-  
+
   console.log(`🔍 Found ${duplicates.length} duplicate verses`);
-  
+
   if (duplicates.length > 0) {
     console.log('📋 First 5 duplicates:');
     duplicates.slice(0, 5).forEach(dup => {
@@ -46,18 +46,18 @@ try {
       console.log(`    Duplicate: "${dup.duplicate.text.substring(0, 50)}..."`);
     });
   }
-  
+
   // Check Genesis 1 specifically
   const genesis1Verses = result.verses.filter(v => v.book_code === 'GEN' && v.chapter === 1);
   console.log(`📖 Genesis 1 has ${genesis1Verses.length} verses`);
-  
+
   // Group by verse number to see duplicates
   const gen1ByVerse = {};
   genesis1Verses.forEach(v => {
     if (!gen1ByVerse[v.verse]) gen1ByVerse[v.verse] = [];
     gen1ByVerse[v.verse].push(v);
   });
-  
+
   console.log('📊 Genesis 1 verse breakdown:');
   Object.keys(gen1ByVerse).sort((a, b) => parseInt(a) - parseInt(b)).slice(0, 10).forEach(verseNum => {
     const verses = gen1ByVerse[verseNum];
@@ -68,7 +68,7 @@ try {
       });
     }
   });
-  
+
 } catch (error) {
   console.error('❌ Parser test failed:', error);
 }

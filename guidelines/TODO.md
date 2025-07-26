@@ -22,7 +22,7 @@
 ## 1. Data Layer ✅ ETL PIPELINE ENHANCED
 - [x] **ETL Pipeline**: Created `scripts/bible_etl/` with multi-source Bible data pipeline
 - [x] **Schema Enhancement**: Updated to support version-specific books with localized names
-- [x] **Entity Synchronization**: 
+- [x] **Entity Synchronization**:
   - [x] Updated Book entity: removed redundant `nameLocal`, added `code`, `versionId`, localized name fields
   - [x] Created Footnote entity for Bible footnotes and cross-references
   - [x] Enhanced Verse entity with footnotes reference

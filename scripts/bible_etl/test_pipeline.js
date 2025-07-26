@@ -25,35 +25,35 @@ parseAllSources(sources, './downloads').then(result => {
   console.log(`📚 Books parsed: ${result.books.size}`);
   console.log(`📄 Chapters parsed: ${result.chapters.size}`);
   console.log(`📝 Verses parsed: ${result.verses.length}`);
-  
+
   // Check by version
   const byVersion = {};
   result.verses.forEach(v => {
     if (!byVersion[v.version_id]) byVersion[v.version_id] = 0;
     byVersion[v.version_id]++;
   });
-  
+
   console.log('📊 Verses by version:');
   Object.entries(byVersion).forEach(([version, count]) => {
     console.log(`  ${version}: ${count} verses`);
   });
-  
-  // Check Genesis 1 specifically 
+
+  // Check Genesis 1 specifically
   const genesis1Verses = result.verses.filter(v => v.book_code === 'GEN' && v.chapter === 1);
   console.log(`📖 Genesis 1 has ${genesis1Verses.length} verses total`);
-  
+
   // Group by version
   const gen1ByVersion = {};
   genesis1Verses.forEach(v => {
     if (!gen1ByVersion[v.version_id]) gen1ByVersion[v.version_id] = [];
     gen1ByVersion[v.version_id].push(v);
   });
-  
+
   console.log('📊 Genesis 1 by version:');
   Object.entries(gen1ByVersion).forEach(([version, verses]) => {
     console.log(`  ${version}: ${verses.length} verses`);
   });
-  
+
 }).catch(error => {
   console.error('❌ Pipeline test failed:', error);
 });

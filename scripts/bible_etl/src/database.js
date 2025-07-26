@@ -275,11 +275,11 @@ function insertBooks(db, books, bookNames) {
       // Get localized names for this book and version
       const key = `${book.version_id}_${code}`;
       const localizedNames = bookNamesMap.get(key);
-      
+
       const orderNumber = bookOrder.indexOf(code) + 1 || 999;
       const testament = orderNumber <= 39 ? 'OT' : 'NT';
       const name = bookNames_en[code] || book.name || code;
-      
+
       // Use localized names if available, otherwise use defaults
       const abbreviation = localizedNames?.abbreviation || code;
       const shortName = localizedNames?.short_name || name;
@@ -287,17 +287,17 @@ function insertBooks(db, books, bookNames) {
       const altName = localizedNames?.alt_name || null;
 
       const result = insert.run(
-        code, 
+        code,
         book.version_id,
-        name, 
-        abbreviation, 
-        shortName, 
-        longName, 
+        name,
+        abbreviation,
+        shortName,
+        longName,
         altName,
-        testament, 
+        testament,
         orderNumber
       );
-      
+
       const bookKey = `${code}_${book.version_id}`;
       bookCodeToId.set(bookKey, result.lastInsertRowid);
     }
@@ -364,7 +364,7 @@ function insertVerses(db, verses, bookCodeToId) {
  */
 function insertFootnotes(db, footnotes, bookCodeToId) {
   if (!footnotes || footnotes.length === 0) return;
-  
+
   const insert = db.prepare(`
     INSERT OR REPLACE INTO footnotes (book_id, chapter_number, verse_number, version_id, footnote_type, caller, content)
     VALUES (?, ?, ?, ?, ?, ?, ?)
@@ -375,9 +375,9 @@ function insertFootnotes(db, footnotes, bookCodeToId) {
       const bookId = bookCodeToId.get(footnote.book_code);
       if (bookId) {
         insert.run(
-          bookId, 
-          footnote.chapter, 
-          footnote.verse, 
+          bookId,
+          footnote.chapter,
+          footnote.verse,
           footnote.version_id,
           footnote.type || 'footnote',
           footnote.caller || '',

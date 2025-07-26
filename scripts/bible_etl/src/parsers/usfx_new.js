@@ -7,11 +7,10 @@ const { normalizeBookCode, getBookName, getTestament, cleanVerseText } = require
  * Parses USFX format files
  */
 function parseUSFX(sourceDir, source) {
-  const data = { books: new Map(), chapters: new Map(), verses: [], footnotes: [], bookNames: [] };
+  const data = { books: new Map(), chapters: new Map(), verses: [], footnotes: [] };
 
-  // First, parse BookNames.xml for localized book names
-  const bookNamesData = parseBookNames(sourceDir, source);
-  data.bookNames = bookNamesData;
+  // First, parse BookNames.xml for abbreviations
+  const bookAbbreviations = parseBookNames(sourceDir);
 
   // Find and parse USFX files
   const files = fs.readdirSync(sourceDir).filter(f =>
@@ -50,14 +49,13 @@ function parseUSFX(sourceDir, source) {
       }
 
       // Get book abbreviation from BookNames.xml or use default
-      const abbreviationData = bookNamesData.find(bn => bn.book_code === bookCode);
-      const abbreviation = abbreviationData ? abbreviationData.abbreviation : bookCode;
+      const abbreviation = bookAbbreviations.get(bookCode) || bookCode;
 
       data.books.set(bookCode, {
         code: bookCode,
         name: getBookName(bookCode),
         testament: getTestament(bookCode),
-        version_id: source.abbreviation
+        abbreviation: abbreviation
       });
 
       // Parse all verses using bcv attribute for accurate parsing
@@ -133,10 +131,10 @@ function parseUSFX(sourceDir, source) {
 }
 
 /**
- * Parse BookNames.xml to get localized book names
+ * Parse BookNames.xml to get abbreviations
  */
-function parseBookNames(sourceDir, source) {
-  const bookNames = [];
+function parseBookNames(sourceDir) {
+  const bookAbbreviations = new Map();
   const bookNamesPath = path.join(sourceDir, 'BookNames.xml');
 
   if (fs.existsSync(bookNamesPath)) {
@@ -148,21 +146,11 @@ function parseBookNames(sourceDir, source) {
         const $book = $(bookEl);
         const code = $book.attr('code');
         const abbr = $book.attr('abbr');
-        const short = $book.attr('short');
-        const long = $book.attr('long');
-        const alt = $book.attr('alt');
 
-        if (code) {
+        if (code && abbr) {
           const normalizedCode = normalizeBookCode(code);
           if (normalizedCode) {
-            bookNames.push({
-              book_code: normalizedCode,
-              language: source.language || 'unknown',
-              abbreviation: abbr || code,
-              short_name: short || code,
-              long_name: long || short || code,
-              alt_name: alt || null
-            });
+            bookAbbreviations.set(normalizedCode, abbr);
           }
         }
       });
@@ -171,7 +159,7 @@ function parseBookNames(sourceDir, source) {
     }
   }
 
-  return bookNames;
+  return bookAbbreviations;
 }
 
 /**
