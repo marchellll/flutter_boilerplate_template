@@ -4,7 +4,18 @@ const cheerio = require('cheerio');
 const { normalizeBookCode, getBookName, getTestament, cleanVerseText } = require('./utils');
 
 /**
- * Parses USFX format files
+ * Parses USFX format files using milestone-based approach
+ * 
+ * @param {string} sourceDir - Directory containing USFX files
+ * @param {Object} source - Source configuration object with name, abbreviation, etc.
+ * @returns {Object} Parsed data structure:
+ *   {
+ *     books: Map<string, {code, name, testament, version_id}>,
+ *     chapters: Map<string, {book_code, chapter_number, verse_count}>,
+ *     verses: Array<{book_code, chapter, verse, text, version_id}>,
+ *     footnotes: Array<{book_code, chapter, verse, version_id, type, caller, content}>,
+ *     bookNames: Array<{book_code, language, abbreviation, short_name, long_name, alt_name}>
+ *   }
  */
 function parseUSFX(sourceDir, source) {
   const data = { books: new Map(), chapters: new Map(), verses: [], footnotes: [], bookNames: [] };
@@ -60,59 +71,22 @@ function parseUSFX(sourceDir, source) {
         version_id: source.abbreviation
       });
 
-      // Parse all verses using bcv attribute for accurate parsing
-      const verses = $(bookEl).find('v[bcv]');
+      // Parse verses using milestone-based approach within paragraphs
+      const { verses: parsedVerses, footnotes: parsedFootnotes } = 
+        parseBookMilestones($(bookEl), bookCode, source.abbreviation, $);
+
+      // Store parsed verses and footnotes
+      data.verses.push(...parsedVerses);
+      data.footnotes.push(...parsedFootnotes);
+
+      // Track verses per chapter
       const chapterVerses = new Map();
-
-      verses.each((_, verseEl) => {
-        const $verse = $(verseEl);
-        const bcv = $verse.attr('bcv');
-
-        if (!bcv) return;
-
-        // Parse BCV (Book.Chapter.Verse) format
-        const bcvParts = bcv.split('.');
-        if (bcvParts.length !== 3) return;
-
-        const [bkvBook, chapterStr, verseStr] = bcvParts;
-        const chapterNum = parseInt(chapterStr);
-        const verseNum = parseInt(verseStr);
-
-        if (isNaN(chapterNum) || isNaN(verseNum)) return;
-
-        // Extract verse text and footnotes
-        const { text, footnotes } = extractVerseContent($verse, $);
-
-        if (text.trim()) {
-          // Store verse data
-          data.verses.push({
-            book_code: bookCode,
-            chapter: chapterNum,
-            verse: verseNum,
-            text: text.trim(),
-            version_id: source.abbreviation
-          });
-
-          // Store footnotes
-          footnotes.forEach(footnote => {
-            data.footnotes.push({
-              book_code: bookCode,
-              chapter: chapterNum,
-              verse: verseNum,
-              version_id: source.abbreviation,
-              type: footnote.type,
-              caller: footnote.caller,
-              content: footnote.content
-            });
-          });
-
-          // Track verses per chapter
-          const chapterKey = `${bookCode}_${chapterNum}`;
-          if (!chapterVerses.has(chapterKey)) {
-            chapterVerses.set(chapterKey, []);
-          }
-          chapterVerses.get(chapterKey).push(verseNum);
+      parsedVerses.forEach(verse => {
+        const chapterKey = `${verse.book_code}_${verse.chapter}`;
+        if (!chapterVerses.has(chapterKey)) {
+          chapterVerses.set(chapterKey, []);
         }
+        chapterVerses.get(chapterKey).push(verse.verse);
       });
 
       // Create chapter entries
@@ -120,10 +94,12 @@ function parseUSFX(sourceDir, source) {
         const [, chapterNumStr] = chapterKey.split('_');
         const chapterNum = parseInt(chapterNumStr);
 
-        data.chapters.set(chapterKey, {
+        const chapterMapKey = `${chapterKey}_${source.abbreviation}`;
+        data.chapters.set(chapterMapKey, {
           book_code: bookCode,
           chapter_number: chapterNum,
-          verse_count: Math.max(...verseNums)
+          verse_count: Math.max(...verseNums),
+          version_id: source.abbreviation
         });
       }
     });
@@ -133,7 +109,173 @@ function parseUSFX(sourceDir, source) {
 }
 
 /**
+ * Parse book content using milestone-based approach for USFX
+ * 
+ * @param {Object} $book - Cheerio wrapped book element
+ * @param {string} bookCode - Normalized book code (e.g., "GEN")
+ * @param {string} versionId - Version abbreviation (e.g., "KJV")
+ * @param {Object} $ - Cheerio instance for XML parsing
+ * @returns {Object} {verses: VerseData[], footnotes: FootnoteData[]}
+ */
+function parseBookMilestones($book, bookCode, versionId, $) {
+  const verses = [];
+  const footnotes = [];
+
+  // Process each content container that might contain verses
+  $book.find('p').each((_, container) => {
+    const $container = $(container);
+    const vElements = $container.find('v');
+    
+    if (vElements.length === 0) return;
+
+    // Parse content within this container using milestone boundaries
+    const { parsedVerses, parsedFootnotes } = 
+      processMilestoneContent($container, bookCode, versionId, $);
+    
+    verses.push(...parsedVerses);
+    footnotes.push(...parsedFootnotes);
+  });
+
+  return { verses, footnotes };
+}
+
+/**
+ * Process content within a container using verse milestones
+ * 
+ * @param {Object} $container - Cheerio wrapped container element (p, q, d, mt, s)
+ * @param {string} bookCode - Normalized book code
+ * @param {string} versionId - Version abbreviation
+ * @param {Object} $ - Cheerio instance
+ * @returns {Object} {parsedVerses: VerseData[], parsedFootnotes: FootnoteData[]}
+ */
+function processMilestoneContent($container, bookCode, versionId, $) {
+  const verses = [];
+  const footnotes = [];
+  const childNodes = $container[0].childNodes;
+  
+  let currentVerse = null;
+  let currentText = '';
+  let currentFootnotes = [];
+
+  for (const node of childNodes) {
+    if (node.nodeType === 1) {
+      const $element = $(node);
+      
+      if (node.tagName === 'v') {
+        // Verse marker found - save previous verse if exists
+        if (currentVerse && currentText.trim()) {
+          verses.push({
+            book_code: currentVerse.book_code,
+            chapter: currentVerse.chapter,
+            verse: currentVerse.verse,
+            text: cleanVerseText(currentText),
+            version_id: versionId
+          });
+          
+          // Add footnotes for this verse
+          currentFootnotes.forEach(footnote => {
+            footnotes.push({
+              book_code: currentVerse.book_code,
+              chapter: currentVerse.chapter,
+              verse: currentVerse.verse,
+              version_id: versionId,
+              type: footnote.type,
+              caller: footnote.caller,
+              content: footnote.content
+            });
+          });
+        }
+
+        // Start new verse - handle both 'bcv' and 'id' + 'bcv' attributes
+        const bcv = $element.attr('bcv') || $element.attr('id');
+        if (bcv) {
+          const bcvParts = bcv.split('.');
+          if (bcvParts.length === 3) {
+            const [, chapterStr, verseStr] = bcvParts;
+            const chapterNum = parseInt(chapterStr);
+            const verseNum = parseInt(verseStr);
+            
+            if (!isNaN(chapterNum) && !isNaN(verseNum)) {
+              currentVerse = {
+                book_code: bookCode,
+                chapter: chapterNum,
+                verse: verseNum
+              };
+              currentText = '';
+              currentFootnotes = [];
+            }
+          }
+        }
+      } else if (node.tagName === 've') {
+        // Verse end marker - save current verse if exists
+        if (currentVerse && currentText.trim()) {
+          verses.push({
+            book_code: currentVerse.book_code,
+            chapter: currentVerse.chapter,
+            verse: currentVerse.verse,
+            text: cleanVerseText(currentText),
+            version_id: versionId
+          });
+          
+          // Add footnotes for this verse
+          currentFootnotes.forEach(footnote => {
+            footnotes.push({
+              book_code: currentVerse.book_code,
+              chapter: currentVerse.chapter,
+              verse: currentVerse.verse,
+              version_id: versionId,
+              type: footnote.type,
+              caller: footnote.caller,
+              content: footnote.content
+            });
+          });
+          
+          // Reset for next verse
+          currentVerse = null;
+          currentText = '';
+          currentFootnotes = [];
+        }
+      } else if (currentVerse) {
+        // Process content within verse boundaries
+        if (node.tagName === 'f') {
+          // Footnote
+          const footnote = extractFootnote($element, $);
+          if (footnote) {
+            currentFootnotes.push(footnote);
+          }
+        } else if (node.tagName === 'x') {
+          // Cross-reference
+          const crossRef = extractCrossReference($element, $);
+          if (crossRef) {
+            currentFootnotes.push(crossRef);
+          }
+        } else if (node.tagName === 'w') {
+          // Word with attributes (Strong's, morphology, etc.)
+          currentText += $element.text();
+          // TODO: Extract word-level data for future enhancement
+        } else if (['nd', 'wj', 'pn', 'k', 'add', 'qt', 'tl'].includes(node.tagName)) {
+          // Theological markup - preserve text content
+          currentText += $element.text();
+        } else {
+          // Other elements - include text content
+          currentText += $element.text();
+        }
+      }
+    } else if (node.nodeType === 3 && currentVerse) {
+      // Text node within verse boundaries
+      currentText += node.nodeValue;
+    }
+  }
+
+  return { parsedVerses: verses, parsedFootnotes: footnotes };
+}
+
+/**
  * Parse BookNames.xml to get localized book names
+ * 
+ * @param {string} sourceDir - Directory containing BookNames.xml
+ * @param {Object} source - Source configuration object
+ * @returns {BookNameData[]} Array of localized book name objects
  */
 function parseBookNames(sourceDir, source) {
   const bookNames = [];
@@ -175,76 +317,33 @@ function parseBookNames(sourceDir, source) {
 }
 
 /**
- * Extract verse content and footnotes from USFX verse element
- */
-function extractVerseContent($verse, $) {
-  const footnotes = [];
-  let verseText = '';
-
-  // Find the closing </ve> tag
-  const $verseEnd = $verse.nextAll('ve').first();
-
-  if ($verseEnd.length > 0) {
-    // Get all content between <v> and <ve>
-    let current = $verse.next();
-
-    while (current.length > 0 && !current.is('ve')) {
-      if (current.get(0).nodeType === 3) {
-        // Text node
-        verseText += current.get(0).textContent;
-      } else if (current.is('f')) {
-        // Footnote element
-        const footnote = extractFootnote(current, $);
-        if (footnote) {
-          footnotes.push(footnote);
-        }
-      } else if (current.is('x')) {
-        // Cross-reference
-        const crossRef = extractCrossReference(current, $);
-        if (crossRef) {
-          footnotes.push(crossRef);
-        }
-      } else {
-        // Other elements - just get text content
-        verseText += current.text() + ' ';
-      }
-      current = current.next();
-    }
-  } else {
-    // Fallback: get text until next verse or end of parent
-    let current = $verse.next();
-    while (current.length > 0 && !current.is('v')) {
-      if (current.get(0).nodeType === 3) {
-        verseText += current.get(0).textContent;
-      } else if (current.is('f')) {
-        const footnote = extractFootnote(current, $);
-        if (footnote) {
-          footnotes.push(footnote);
-        }
-      } else if (current.is('x')) {
-        const crossRef = extractCrossReference(current, $);
-        if (crossRef) {
-          footnotes.push(crossRef);
-        }
-      } else {
-        verseText += current.text() + ' ';
-      }
-      current = current.next();
-    }
-  }
-
-  return {
-    text: cleanVerseText(verseText),
-    footnotes: footnotes
-  };
-}
-
-/**
- * Extract footnote content from USFX footnote element
+ * Extract footnote content from USFX footnote element with sub-structure
+ * 
+ * @param {Object} $footnote - Cheerio wrapped footnote element
+ * @param {Object} $ - Cheerio instance
+ * @returns {Object|null} {type: "footnote", caller: string, content: string} or null
  */
 function extractFootnote($footnote, $) {
   const caller = $footnote.attr('caller') || '';
-  const content = $footnote.text().trim();
+  
+  // Extract structured footnote content
+  const fr = $footnote.find('fr').text().trim(); // Reference
+  const ft = $footnote.find('ft').text().trim(); // Main text
+  const fk = $footnote.find('fk').text().trim(); // Keywords
+  const fq = $footnote.find('fq').text().trim(); // Quotations
+  
+  // Combine content or use simple text if no structure
+  let content = '';
+  if (fr || ft || fk || fq) {
+    const parts = [];
+    if (fr) parts.push(fr);
+    if (ft) parts.push(ft);
+    if (fk) parts.push(fk);
+    if (fq) parts.push(fq);
+    content = parts.join(' ');
+  } else {
+    content = $footnote.text().trim();
+  }
 
   if (content) {
     return {
@@ -258,11 +357,33 @@ function extractFootnote($footnote, $) {
 }
 
 /**
- * Extract cross-reference content from USFX cross-reference element
+ * Extract cross-reference content from USFX cross-reference element with sub-structure
+ * 
+ * @param {Object} $crossRef - Cheerio wrapped cross-reference element
+ * @param {Object} $ - Cheerio instance
+ * @returns {Object|null} {type: "cross_reference", caller: string, content: string} or null
  */
 function extractCrossReference($crossRef, $) {
   const caller = $crossRef.attr('caller') || '';
-  const content = $crossRef.text().trim();
+  
+  // Extract structured cross-reference content
+  const xo = $crossRef.find('xo').text().trim(); // Origin
+  const xt = $crossRef.find('xt').text().trim(); // Targets
+  const xk = $crossRef.find('xk').text().trim(); // Keywords
+  const xq = $crossRef.find('xq').text().trim(); // Quotations
+  
+  // Combine content or use simple text if no structure
+  let content = '';
+  if (xo || xt || xk || xq) {
+    const parts = [];
+    if (xo) parts.push(xo);
+    if (xt) parts.push(xt);
+    if (xk) parts.push(xk);
+    if (xq) parts.push(xq);
+    content = parts.join(' ');
+  } else {
+    content = $crossRef.text().trim();
+  }
 
   if (content) {
     return {

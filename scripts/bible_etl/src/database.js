@@ -321,7 +321,8 @@ function insertChapters(db, chapters, bookCodeToId) {
 
   const transaction = db.transaction((chapters) => {
     for (const [key, chapter] of chapters) {
-      const bookId = bookCodeToId.get(chapter.book_code);
+      const bookKey = `${chapter.book_code}_${chapter.version_id}`;
+      const bookId = bookCodeToId.get(bookKey);
       if (bookId) {
         insert.run(bookId, chapter.chapter_number, chapter.verse_count);
       }
@@ -349,7 +350,8 @@ function insertVerses(db, verses, bookCodeToId) {
 
   const transaction = db.transaction((verses) => {
     for (const verse of verses) {
-      const bookId = bookCodeToId.get(verse.book_code);
+      const bookKey = `${verse.book_code}_${verse.version_id}`;
+      const bookId = bookCodeToId.get(bookKey);
       if (bookId) {
         insert.run(bookId, verse.chapter, verse.verse, verse.text, verse.version_id);
       }
@@ -372,7 +374,8 @@ function insertFootnotes(db, footnotes, bookCodeToId) {
 
   const transaction = db.transaction((footnotes) => {
     for (const footnote of footnotes) {
-      const bookId = bookCodeToId.get(footnote.book_code);
+      const bookKey = `${footnote.book_code}_${footnote.version_id}`;
+      const bookId = bookCodeToId.get(bookKey);
       if (bookId) {
         insert.run(
           bookId,
