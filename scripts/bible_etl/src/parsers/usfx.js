@@ -321,6 +321,7 @@ function parseBookNames(sourceDir, source) {
           if (normalizedCode) {
             bookNames.push({
               book_code: normalizedCode,
+              version_id: source.abbreviation, // Use source abbreviation for version ID
               language: source.language || 'unknown',
               abbreviation: abbr || code,
               short_name: short || code,

@@ -179,20 +179,40 @@ function createSchema(db) {
     );
   `);
 
-  // Create indexes for performance
+  // Create indexes for performance - optimized for multi-version Bible database
   db.exec(`
-    CREATE INDEX idx_verses_book_chapter ON verses(book_id, chapter_number);
-    CREATE INDEX idx_verses_reference ON verses(book_id, chapter_number, verse_number);
+    -- Verses table indexes (most frequently queried)
+    CREATE INDEX idx_verses_book_chapter_version ON verses(book_id, chapter_number, version_id);
+    CREATE INDEX idx_verses_reference_version ON verses(book_id, chapter_number, verse_number, version_id);
     CREATE INDEX idx_verses_version ON verses(version_id);
+    CREATE INDEX idx_verses_version_book ON verses(version_id, book_id);
+    CREATE INDEX idx_verses_text_search ON verses(book_id, version_id, text);
+    
+    -- Books table indexes
+    CREATE INDEX idx_books_version_testament ON books(version_id, testament);
+    CREATE INDEX idx_books_version_order ON books(version_id, book_order);
+    CREATE INDEX idx_books_code_version ON books(code, version_id);
+    CREATE INDEX idx_books_testament_order ON books(testament, book_order);
+    
+    -- Chapters table indexes
     CREATE INDEX idx_chapters_book ON chapters(book_id);
-    CREATE INDEX idx_highlights_verse ON highlights(book_id, chapter_number, verse_number);
-    CREATE INDEX idx_notes_verse ON notes(book_id, chapter_number, verse_number);
-    CREATE INDEX idx_footnotes_verse ON footnotes(book_id, chapter_number, verse_number);
+    CREATE INDEX idx_chapters_book_number ON chapters(book_id, chapter_number);
+    
+    -- User content indexes (highlights, notes) - include version_id for filtering
+    CREATE INDEX idx_highlights_verse_version ON highlights(book_id, chapter_number, verse_number, version_id);
+    CREATE INDEX idx_highlights_version ON highlights(version_id);
+    CREATE INDEX idx_highlights_created ON highlights(created_at DESC);
+    
+    CREATE INDEX idx_notes_verse_version ON notes(book_id, chapter_number, verse_number, version_id);
+    CREATE INDEX idx_notes_version ON notes(version_id);
+    CREATE INDEX idx_notes_created ON notes(created_at DESC);
+    CREATE INDEX idx_notes_title_search ON notes(title, version_id);
+    
+    -- Footnotes indexes - include version_id and type for filtering
+    CREATE INDEX idx_footnotes_verse_version ON footnotes(book_id, chapter_number, verse_number, version_id);
+    CREATE INDEX idx_footnotes_version_type ON footnotes(version_id, footnote_type);
     CREATE INDEX idx_footnotes_type ON footnotes(footnote_type);
-    CREATE INDEX idx_books_testament ON books(testament);
-    CREATE INDEX idx_books_order ON books(book_order);
-    CREATE INDEX idx_books_code ON books(code);
-    CREATE INDEX idx_books_version ON books(version_id);
+    CREATE INDEX idx_footnotes_caller ON footnotes(caller, version_id);
   `);
 }
 
@@ -258,8 +278,13 @@ function insertBooks(db, books, bookNames) {
   // Group book names by version and code for efficient lookup
   const bookNamesMap = new Map();
   for (const bookName of bookNames) {
-    const key = `${bookName.version_id}_${bookName.book_code}`;
+    // Handle the case where version_id might not be set properly
+    const versionKey = bookName.version_id || 'default';
+    const key = `${versionKey}_${bookName.book_code}`;
     bookNamesMap.set(key, bookName);
+    
+    // Also create a version-agnostic key as fallback
+    bookNamesMap.set(bookName.book_code, bookName);
   }
 
   const insert = db.prepare(`
@@ -271,10 +296,19 @@ function insertBooks(db, books, bookNames) {
   const bookCodeToId = new Map();
 
   const transaction = db.transaction((books) => {
-    for (const [code, book] of books) {
+    for (const [mapKey, book] of books) {
+      // The mapKey might be just the book code (e.g., "GEN") 
+      // or bookCode_versionId (e.g., "GEN_KJV") depending on parser logic
+      // Always use book.code which should be the clean book code
+      const code = book.code;
+      
       // Get localized names for this book and version
-      const key = `${book.version_id}_${code}`;
-      const localizedNames = bookNamesMap.get(key);
+      const versionKey = book.version_id || 'default';
+      const primaryKey = `${versionKey}_${code}`;
+      const fallbackKey = code;
+      
+      // Try version-specific first, then fallback to book code only
+      const localizedNames = bookNamesMap.get(primaryKey) || bookNamesMap.get(fallbackKey);
 
       const orderNumber = bookOrder.indexOf(code) + 1 || 999;
       const testament = orderNumber <= 39 ? 'OT' : 'NT';
