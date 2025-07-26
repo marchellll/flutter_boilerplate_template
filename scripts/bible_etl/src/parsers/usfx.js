@@ -30,16 +30,26 @@ function parseUSFX(sourceDir, source) {
     (f.endsWith('.xml') && f.includes('usfx'))
   );
 
+  console.log(`    🔍 Found ${files.length} USFX files: ${files.join(', ')}`);
+  
+  if (files.length === 0) {
+    console.warn(`    ⚠️ No USFX files found in ${sourceDir}`);
+    const allFiles = fs.readdirSync(sourceDir);
+    console.warn(`    📂 Available files: ${allFiles.join(', ')}`);
+  }
+
   let bookCount = 0;
   let totalBooks = 0;
 
   for (const file of files) {
+    console.log(`    📁 Processing file: ${file}`);
     const content = fs.readFileSync(path.join(sourceDir, file), 'utf8');
     const $ = cheerio.load(content, { xmlMode: true });
 
     // Count total books first
     if (totalBooks === 0) {
       totalBooks = $('book').length;
+      console.log(`    📚 Found ${totalBooks} books in ${file}`);
     }
 
     $('book').each((_, bookEl) => {
@@ -47,13 +57,19 @@ function parseUSFX(sourceDir, source) {
       const bookId = $(bookEl).attr('id') || $(bookEl).attr('code');
 
       if (!bookId) {
+        console.warn(`    ⚠️ Book element without id/code attribute found`);
         return;
       }
 
+      console.log(`    📖 Processing book with id: ${bookId}`);
+
       const bookCode = normalizeBookCode(bookId);
       if (!bookCode) {
+        console.warn(`    ❌ Failed to normalize book code: ${bookId}`);
         return;
       }
+
+      console.log(`    ✅ Normalized ${bookId} -> ${bookCode}`);
 
       bookCount++;
       if (bookCount % 10 === 0 || bookCount === totalBooks) {
@@ -74,6 +90,12 @@ function parseUSFX(sourceDir, source) {
       // Parse verses using milestone-based approach within paragraphs
       const { verses: parsedVerses, footnotes: parsedFootnotes } = 
         parseBookMilestones($(bookEl), bookCode, source.abbreviation, $);
+
+      console.log(`    📊 ${bookCode}: ${parsedVerses.length} verses, ${parsedFootnotes.length} footnotes`);
+      
+      if (parsedVerses.length === 0) {
+        console.warn(`    ⚠️ No verses extracted from ${bookCode}`);
+      }
 
       // Store parsed verses and footnotes
       data.verses.push(...parsedVerses);

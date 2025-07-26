@@ -7,12 +7,12 @@
     "abbreviation": "KJV",
     "description": "The King James Version (1769) is a classic English translation known for its literary beauty and historical significance."
   },
-  "tsi": {
-    "name": "Terjemahan Sederhana Indonesia",
+  "indayt": {
+    "name": "Alkitab Yang Terbuka",
     "format": "usfx",
-    "url": "https://ebible.org/Scriptures/ind_usfx.zip",
+    "url": "https://ebible.org/Scriptures/indayt_usfx.zip",
     "language": "id",
-    "abbreviation": "TSI",
-    "description": "Terjemahan Sederhana Indonesia - Simple Indonesian translation for easy understanding."
+    "abbreviation": "AYT",
+    "description": "Alkitab Yang Terbuka - Open Indonesian Bible translation."
   }
 }

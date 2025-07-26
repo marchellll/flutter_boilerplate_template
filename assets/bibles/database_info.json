@@ -1,12 +1,12 @@
 {
   "version": "1.0.0",
-  "built_at": "2025-07-26T08:02:17.567Z",
-  "book_count": 66,
+  "built_at": "2025-07-26T16:56:01.237Z",
+  "book_count": 132,
   "chapter_count": 0,
   "verse_count": 0,
   "versions": [
     "KJV",
-    "TSI"
+    "AYT"
   ],
-  "size_bytes": 151552
+  "size_bytes": 159744
 }

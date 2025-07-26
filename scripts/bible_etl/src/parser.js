@@ -17,8 +17,12 @@ async function parseAllSources(sources, downloadsDir) {
   for (const [id, source] of Object.entries(sources)) {
     console.log(`  📖 Parsing ${source.name}...`);
     const sourceData = await parseSource(id, source, downloadsDir);
+    console.log(`    📊 ${source.name}: ${sourceData.verses.length} verses, ${sourceData.books.size} books`);
     mergeSourceData(allData, sourceData, id);
+    console.log(`    📈 After merge: ${allData.verses.length} total verses, ${allData.books.size} total books`);
   }
+
+  console.log(`📊 Final combined data: ${allData.verses.length} verses, ${allData.footnotes.length} footnotes, ${allData.books.size} books`);
 
   return allData;
 }
@@ -53,11 +57,10 @@ async function parseSource(id, source, downloadsDir) {
  * Merges source data into combined dataset
  */
 function mergeSourceData(allData, sourceData, versionId) {
-  // Merge books
+  // Merge books - use compound key to allow multiple versions
   for (const [code, book] of sourceData.books) {
-    if (!allData.books.has(code)) {
-      allData.books.set(code, book);
-    }
+    const bookKey = `${code}_${book.version_id}`;
+    allData.books.set(bookKey, book);
   }
 
   // Merge chapters
