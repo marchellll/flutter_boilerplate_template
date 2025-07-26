@@ -38,10 +38,13 @@
 - [ ] **TODO**: Implement BLoC/repository layer for database operations
 - [ ] **TODO**: Run successful ETL pipeline to generate actual bible.db with verses
 
-## 2. Built-in Versions ⚠️ PIPELINE READY
+## 2. Built-in Versions ✅ SOURCES CONFIGURED
 - [x] **ETL Infrastructure**: Pipeline supports multiple Bible versions
-- [x] **Source Configuration**: `bible_sources.json` with KJV, WEB, ASV sources
-- [ ] **TODO**: Run pipeline to download and process TSI & KJV
+- [x] **Source Configuration**: `bible_sources.json` configured with KJV and TSI
+- [x] **Database Enhancement**: Version-specific book support with unique constraints
+- [x] **Book Localization**: Integrated local book names (e.g., "Genesis" vs "Kejadian")
+- [⚠️] **ISSUE**: ETL pipeline runs successfully but extracts 0 verses
+- [ ] **TODO**: Debug USFX parser verse extraction issue
 - [ ] **TODO**: Verify database deployment to `assets/bibles/`
 - [ ] **TODO**: Show in VersionSelector widget
 
@@ -125,7 +128,29 @@
 **CURRENT STATE**:
 - UI/UX framework complete ✅
 - **Data pipeline infrastructure complete** ✅
-- **Needs**: Execute ETL pipeline + implement Flutter data layer
+- **Entity schema synchronized with database** ✅
+- **Footnote support implemented** ✅
+- **ISSUE**: USFX parser not extracting verses (0 verses in database)
+- **Debug tools available**: Enhanced verify.js with content quality checks
+- **Cleanup needed**: Remove debug files (debug_genesis.js, test_*.js) and use verify.js
+- **Needs**: Debug USFX verse extraction + implement Flutter data layer
+
+## Current ETL Status (As of Session End)
+- **Database Schema**: ✅ Updated with footnotes, version-specific books
+- **Entity Files**: ✅ Synchronized (Book, Verse, Footnote entities)
+- **USFX Parser**: ⚠️ Enhanced but not extracting verses (BCV parsing issue)
+- **Verification**: ✅ Enhanced with content quality checks in verify.js
+- **Downloads**: ✅ KJV and TSI sources download successfully
+- **Processing**: ⚠️ Pipeline completes but shows "0 verses, 0 chapters"
+
+## Next Agent Priority Tasks
+1. **DEBUG USFX PARSER**: Investigate why verse extraction returns 0 results
+   - Check BCV attribute parsing in parsers/usfx.js
+   - Verify XML structure handling for USFX format
+   - Test with sample USFX file manually
+2. **CLEANUP**: Remove debug files and consolidate functionality into verify.js
+3. **VALIDATE**: Run enhanced verification to identify content quality issues
+4. **GENERATE**: Produce working bible.db with actual verse content
 
 ## Phase 2 (Defer)
 - Dynamic downloads (API)
