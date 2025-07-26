@@ -5,7 +5,7 @@ const { normalizeBookCode, getBookName, getTestament, cleanVerseText } = require
 
 /**
  * Parses USFX format files using milestone-based approach
- * 
+ *
  * @param {string} sourceDir - Directory containing USFX files
  * @param {Object} source - Source configuration object with name, abbreviation, etc.
  * @returns {Object} Parsed data structure:
@@ -31,7 +31,7 @@ function parseUSFX(sourceDir, source) {
   );
 
   console.log(`    🔍 Found ${files.length} USFX files: ${files.join(', ')}`);
-  
+
   if (files.length === 0) {
     console.warn(`    ⚠️ No USFX files found in ${sourceDir}`);
     const allFiles = fs.readdirSync(sourceDir);
@@ -88,11 +88,11 @@ function parseUSFX(sourceDir, source) {
       });
 
       // Parse verses using milestone-based approach within paragraphs
-      const { verses: parsedVerses, footnotes: parsedFootnotes } = 
+      const { verses: parsedVerses, footnotes: parsedFootnotes } =
         parseBookMilestones($(bookEl), bookCode, source.abbreviation, $);
 
       console.log(`    📊 ${bookCode}: ${parsedVerses.length} verses, ${parsedFootnotes.length} footnotes`);
-      
+
       if (parsedVerses.length === 0) {
         console.warn(`    ⚠️ No verses extracted from ${bookCode}`);
       }
@@ -132,7 +132,7 @@ function parseUSFX(sourceDir, source) {
 
 /**
  * Parse book content using milestone-based approach for USFX
- * 
+ *
  * @param {Object} $book - Cheerio wrapped book element
  * @param {string} bookCode - Normalized book code (e.g., "GEN")
  * @param {string} versionId - Version abbreviation (e.g., "KJV")
@@ -147,13 +147,13 @@ function parseBookMilestones($book, bookCode, versionId, $) {
   $book.find('p').each((_, container) => {
     const $container = $(container);
     const vElements = $container.find('v');
-    
+
     if (vElements.length === 0) return;
 
     // Parse content within this container using milestone boundaries
-    const { parsedVerses, parsedFootnotes } = 
+    const { parsedVerses, parsedFootnotes } =
       processMilestoneContent($container, bookCode, versionId, $);
-    
+
     verses.push(...parsedVerses);
     footnotes.push(...parsedFootnotes);
   });
@@ -163,7 +163,7 @@ function parseBookMilestones($book, bookCode, versionId, $) {
 
 /**
  * Process content within a container using verse milestones
- * 
+ *
  * @param {Object} $container - Cheerio wrapped container element (p, q, d, mt, s)
  * @param {string} bookCode - Normalized book code
  * @param {string} versionId - Version abbreviation
@@ -174,7 +174,7 @@ function processMilestoneContent($container, bookCode, versionId, $) {
   const verses = [];
   const footnotes = [];
   const childNodes = $container[0].childNodes;
-  
+
   let currentVerse = null;
   let currentText = '';
   let currentFootnotes = [];
@@ -182,7 +182,7 @@ function processMilestoneContent($container, bookCode, versionId, $) {
   for (const node of childNodes) {
     if (node.nodeType === 1) {
       const $element = $(node);
-      
+
       if (node.tagName === 'v') {
         // Verse marker found - save previous verse if exists
         if (currentVerse && currentText.trim()) {
@@ -193,7 +193,7 @@ function processMilestoneContent($container, bookCode, versionId, $) {
             text: cleanVerseText(currentText),
             version_id: versionId
           });
-          
+
           // Add footnotes for this verse
           currentFootnotes.forEach(footnote => {
             footnotes.push({
@@ -216,7 +216,7 @@ function processMilestoneContent($container, bookCode, versionId, $) {
             const [, chapterStr, verseStr] = bcvParts;
             const chapterNum = parseInt(chapterStr);
             const verseNum = parseInt(verseStr);
-            
+
             if (!isNaN(chapterNum) && !isNaN(verseNum)) {
               currentVerse = {
                 book_code: bookCode,
@@ -238,7 +238,7 @@ function processMilestoneContent($container, bookCode, versionId, $) {
             text: cleanVerseText(currentText),
             version_id: versionId
           });
-          
+
           // Add footnotes for this verse
           currentFootnotes.forEach(footnote => {
             footnotes.push({
@@ -251,7 +251,7 @@ function processMilestoneContent($container, bookCode, versionId, $) {
               content: footnote.content
             });
           });
-          
+
           // Reset for next verse
           currentVerse = null;
           currentText = '';
@@ -294,7 +294,7 @@ function processMilestoneContent($container, bookCode, versionId, $) {
 
 /**
  * Parse BookNames.xml to get localized book names
- * 
+ *
  * @param {string} sourceDir - Directory containing BookNames.xml
  * @param {Object} source - Source configuration object
  * @returns {BookNameData[]} Array of localized book name objects
@@ -340,20 +340,20 @@ function parseBookNames(sourceDir, source) {
 
 /**
  * Extract footnote content from USFX footnote element with sub-structure
- * 
+ *
  * @param {Object} $footnote - Cheerio wrapped footnote element
  * @param {Object} $ - Cheerio instance
  * @returns {Object|null} {type: "footnote", caller: string, content: string} or null
  */
 function extractFootnote($footnote, $) {
   const caller = $footnote.attr('caller') || '';
-  
+
   // Extract structured footnote content
   const fr = $footnote.find('fr').text().trim(); // Reference
   const ft = $footnote.find('ft').text().trim(); // Main text
   const fk = $footnote.find('fk').text().trim(); // Keywords
   const fq = $footnote.find('fq').text().trim(); // Quotations
-  
+
   // Combine content or use simple text if no structure
   let content = '';
   if (fr || ft || fk || fq) {
@@ -380,20 +380,20 @@ function extractFootnote($footnote, $) {
 
 /**
  * Extract cross-reference content from USFX cross-reference element with sub-structure
- * 
+ *
  * @param {Object} $crossRef - Cheerio wrapped cross-reference element
  * @param {Object} $ - Cheerio instance
  * @returns {Object|null} {type: "cross_reference", caller: string, content: string} or null
  */
 function extractCrossReference($crossRef, $) {
   const caller = $crossRef.attr('caller') || '';
-  
+
   // Extract structured cross-reference content
   const xo = $crossRef.find('xo').text().trim(); // Origin
   const xt = $crossRef.find('xt').text().trim(); // Targets
   const xk = $crossRef.find('xk').text().trim(); // Keywords
   const xq = $crossRef.find('xq').text().trim(); // Quotations
-  
+
   // Combine content or use simple text if no structure
   let content = '';
   if (xo || xt || xk || xq) {

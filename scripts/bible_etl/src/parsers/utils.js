@@ -19,7 +19,7 @@ function normalizeBookCode(code) {
     'EZK': 'EZK', 'DAN': 'DAN', 'HOS': 'HOS', 'JOL': 'JOL', 'AMO': 'AMO',
     'OBA': 'OBA', 'JON': 'JON', 'MIC': 'MIC', 'NAM': 'NAM', 'HAB': 'HAB',
     'ZEP': 'ZEP', 'HAG': 'HAG', 'ZEC': 'ZEC', 'MAL': 'MAL',
-    
+
     // New Testament (27 books)
     'MAT': 'MAT', 'MRK': 'MRK', 'LUK': 'LUK', 'JHN': 'JHN', 'ACT': 'ACT',
     'ROM': 'ROM', '1CO': '1CO', '2CO': '2CO', 'GAL': 'GAL', 'EPH': 'EPH',
@@ -27,7 +27,7 @@ function normalizeBookCode(code) {
     '2TI': '2TI', 'TIT': 'TIT', 'PHM': 'PHM', 'HEB': 'HEB', 'JAS': 'JAS',
     '1PE': '1PE', '2PE': '2PE', '1JN': '1JN', '2JN': '2JN', '3JN': '3JN',
     'JUD': 'JUD', 'REV': 'REV',
-    
+
     // Common alternative codes
     'JOEL': 'JOL', 'SONG': 'SNG', 'SONGS': 'SNG', 'ECCLESIASTES': 'ECC',
     'EZEKIEL': 'EZK', 'HOSEA': 'HOS', 'AMOS': 'AMO', 'OBADIAH': 'OBA',
@@ -45,7 +45,7 @@ function normalizeBookCode(code) {
     console.warn(`    ⚠️ Unknown book code: ${code} - this book will be skipped`);
     return null;
   }
-  
+
   return normalized;
 }
 
@@ -61,7 +61,7 @@ function getBookName(code) {
     'HOS': 'Hosea', 'JOL': 'Joel', 'AMO': 'Amos', 'OBA': 'Obadiah', 'JON': 'Jonah',
     'MIC': 'Micah', 'NAM': 'Nahum', 'HAB': 'Habakkuk', 'ZEP': 'Zephaniah', 'HAG': 'Haggai',
     'ZEC': 'Zechariah', 'MAL': 'Malachi',
-    
+
     // New Testament
     'MAT': 'Matthew', 'MRK': 'Mark', 'LUK': 'Luke', 'JHN': 'John', 'ACT': 'Acts',
     'ROM': 'Romans', '1CO': '1 Corinthians', '2CO': '2 Corinthians', 'GAL': 'Galatians',

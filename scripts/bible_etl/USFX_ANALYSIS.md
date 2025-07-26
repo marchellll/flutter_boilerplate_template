@@ -1,14 +1,14 @@
-# USFX Format Reference Guide
+# USFX Format Analysis & Parsing Issue Resolution
 
 ## Overview
 
-This document provides a comprehensive reference for the USFX (Unified Standard Format XML) format used for Bible text encoding. It covers the format structure, parsing strategies, and implementation details for the Bible ETL pipeline.
+The Bible ETL pipeline is experiencing an issue where the USFX parser extracts 0 verses despite successfully processing 31,102 verse markers. This document analyzes the USFX format structure and provides the solution.
 
-## USFX Format Structure
+## USFX Format Structure (Based on Schema Analysis)
 
 ### Key Concepts
 
-The USFX format uses a **milestone-based approach** for verse boundaries, which is fundamentally different from container-based XML structures.
+The USFX (Unified Standard Format XML) format uses a **milestone-based approach** for verse boundaries, which is fundamentally different from container-based XML structures.
 
 #### 1. Verse Markers (`<v>` elements)
 - **Purpose**: Mark the **starting point** of a verse, NOT the verse content itself

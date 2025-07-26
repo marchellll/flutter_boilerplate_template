@@ -72,12 +72,12 @@ function mergeSourceData(allData, sourceData, versionId) {
 
   // Add verses
   allData.verses.push(...sourceData.verses);
-  
+
   // Add footnotes
   if (sourceData.footnotes) {
     allData.footnotes.push(...sourceData.footnotes);
   }
-  
+
   // Add book names
   if (sourceData.bookNames) {
     allData.bookNames.push(...sourceData.bookNames);
